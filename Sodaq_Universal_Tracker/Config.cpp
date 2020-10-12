@@ -71,7 +71,7 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 15;
+    _defaultFixInterval = 1;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
@@ -125,13 +125,13 @@ void ConfigParams::reset()
 
     _loraPort = 1;
     _isAdrOn = 1;
-    _isAckOn = 0;
+    _isAckOn = 1;
     _spreadingFactor = 7;
     _powerIndex = 1;
     _gpsMinSatelliteCount = 4;
 
     _isLedEnabled = 0;
-    _isDebugOn = 0;
+    _isDebugOn = 1;
 
     _shouldRetryConnectionOnSend = true;
 
