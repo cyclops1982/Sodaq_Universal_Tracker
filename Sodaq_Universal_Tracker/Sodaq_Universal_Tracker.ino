@@ -51,8 +51,8 @@ POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
-#define VERSION "1.1.0"
-#define STARTUP_DELAY 5000
+#define VERSION "1.1.3"
+#define STARTUP_DELAY 1000
 
 // #define DEFAULT_LORA_PORT 2
 // #define DEFAULT_IS_OTAA_ENABLED 1
