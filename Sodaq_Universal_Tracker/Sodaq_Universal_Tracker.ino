@@ -48,7 +48,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "CayenneLPP.h"
 #include "Network.h"
 
-//#define DEBUG
+#define DEBUG
+#define ARDUINO_SODAQ_ONE
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
 #define VERSION "1.1.3"

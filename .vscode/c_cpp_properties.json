@@ -3,6 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.19\\**",
+                "C:\\Users\\RUben\\Documents\\Arduino\\libraries\\Sodaq_RN2483\\src",
+                "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+                "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.8.9\\**",
                 "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.20\\**",
                 "${workspaceFolder}/**"
             ],
@@ -16,7 +20,7 @@
             "cppStandard": "gnu++14",
             "intelliSenseMode": "gcc-x64",
             "forcedInclude": [
-                "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.20\\cores\\arduino\\Arduino.h"
+                "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.19\\cores\\arduino\\Arduino.h"
             ]
         }
     ],
