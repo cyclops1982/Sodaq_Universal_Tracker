@@ -1,0 +1,5 @@
+{
+    "board": "SODAQ:samd:sodaq_one",
+    "programmer": "AVR ISP",
+    "port": "COM3"
+}
