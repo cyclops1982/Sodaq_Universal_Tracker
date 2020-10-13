@@ -1,6 +1,7 @@
 {
     "configurations": [
         {
+
             "name": "Win32",
             "includePath": [
                 "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.19\\**",
@@ -10,10 +11,20 @@
                 "C:\\Users\\RUben\\AppData\\Local\\Arduino15\\packages\\SODAQ\\hardware\\samd\\1.6.20\\**",
                 "${workspaceFolder}/**"
             ],
+            
             "defines": [
                 "_DEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "ENABLE_SLEEP",
+                "ARDUINO_SODAQ_ONE",
+                "ARDUINO_ARCH_SAMD"
+            ],
+
+            "compilerArgs": [
+                "-D ARDUINO_SODAQ_ONE",
+                "-D ARDUINO_ARCH_SAMD",
+                "-D ENABLE_SLEEP"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu11",
