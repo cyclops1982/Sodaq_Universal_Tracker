@@ -2,5 +2,5 @@
     "board": "SODAQ:samd:sodaq_one",
     "programmer": "AVR ISP",
     "port": "COM3",
-    "sketch": "Sodaq_Universal_Tracker\\Sodaq_Universal_Tracker.ino"
+    "sketch": "Sodaq_Universal_TrackerVnext\\Sodaq_Universal_Tracker.ino"
 }
