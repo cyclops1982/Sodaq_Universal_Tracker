@@ -47,7 +47,7 @@ struct ConfigParams
     uint8_t _alternativeFixFromMinutes;
     uint8_t _alternativeFixToHours;
     uint8_t _alternativeFixToMinutes;
-    uint16_t _gpsFixTimeout;
+    uint8_t _gpsFixTimeout;
 
     uint8_t _accelerationPercentage;
     uint8_t _accelerationDuration;
@@ -72,10 +72,10 @@ struct ConfigParams
     char _apnUser[32 + 1];
     char _apnPassword[32 + 1];
 
-    uint8_t _band;
+    char _band[36 + 1];
     uint8_t _rxTimeout;
 
-    char _targetIP[16]; // 4x3 = 12, + 3 dots, + nullchar = 16
+    char _targetIP[50]; // IP or DNS = 50 
 
     uint16_t _targetPort;
 
@@ -111,7 +111,7 @@ public:
     uint8_t getAlternativeFixToHours() const { return _alternativeFixToHours; }
     uint8_t getAlternativeFixToMinutes() const { return _alternativeFixToMinutes; }
     uint32_t getAlternativeFixTo() const { return _alternativeFixToHours * 60 * 60 + _alternativeFixToMinutes * 60; }
-    uint16_t getGpsFixTimeout() const { return _gpsFixTimeout; }
+    uint8_t getGpsFixTimeout() const { return _gpsFixTimeout; }
 
     uint8_t getAccelerationPercentage() const { return _accelerationPercentage; }
     uint8_t getAccelerationDuration() const { return _accelerationDuration; }
@@ -137,7 +137,7 @@ public:
     uint8_t getCID() const { return _cid; }
     uint8_t getMnoProfile() const { return _mnoProfile; }
 
-    uint8_t getBand() const { return _band; }
+    const char* getBand() const { return _band; }
     uint8_t getRXtimeout() const { return _rxTimeout; }
 
     const char* getTargetIP() const { return _targetIP; }

@@ -112,6 +112,7 @@ bool LoRaHelper::convertAndCheckHexArray(uint8_t* result, const char* hex, size_
         return true;
     }
 
+
     return foundNonZero;
 }
 
@@ -139,6 +140,7 @@ void LoRaHelper::retransmissionUpdateOnSuccess()
     _isRetransmissionPending = false;
     _transmissionAttemptsRemaining = LORA_MAX_RETRANSMISSIONS;
 }
+
 
 void LoRaHelper::retransmissionUpdateOnFailure()
 {
@@ -174,7 +176,7 @@ bool LoRaHelper::joinAbp()
 * Sends the current sendBuffer through lora (if enabled).
 * Repeats the transmitions according to getRepeatTransmissionCount().
 */
-uint8_t LoRaHelper::transmit(uint8_t* buffer, uint8_t size, int16_t overrideLoRaPort)
+uint8_t LoRaHelper::transmit(uint8_t* buffer, uint8_t size, int16_t overrideLoRaPort, uint8_t batLevel)
 {
     _lastTransmissionAttemptTimestamp = _getNow();
 
@@ -208,6 +210,8 @@ uint8_t LoRaHelper::transmit(uint8_t* buffer, uint8_t size, int16_t overrideLoRa
     }
 
     setActive(true);
+    setBatLevel(batLevel);
+    
     uint16_t port = overrideLoRaPort > -1 ? overrideLoRaPort : _defaultLoRaPort;
 
     for (uint8_t i = 0; i < 1 + getRepeatTransmissionCount(); i++) {
@@ -353,4 +357,8 @@ void LoRaHelper::setActive(bool on)
     else {
         _rn2483->sleep();
     }
+}
+
+bool LoRaHelper::setBatLevel(uint8_t batLevel) {
+    return _rn2483->setBatLevel(batLevel);
 }

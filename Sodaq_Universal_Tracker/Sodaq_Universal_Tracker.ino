@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018, SODAQ
+Copyright (c) 2018-2020, SODAQ
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,12 +48,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "CayenneLPP.h"
 #include "Network.h"
 
-#define DEBUG
-#define ARDUINO_SODAQ_ONE
-
+//#define DEBUG
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
-#define VERSION "1.0.4"
+#define VERSION "1.0.5"
 #define STARTUP_DELAY 1000
 
 // #define DEFAULT_LORA_PORT 2
@@ -114,9 +112,10 @@ Time time;
 Sodaq_LSM303AGR accelerometer;
 Network network;
 
-#define DEFAULT_APN "nb.inetd.gdsp"
-#define DEFAULT_FORCE_OPERATOR "20404"
-#define DEFAULT_BAND 20
+#define DEFAULT_APN "nb.inetd.gdsp" // APN Vodafone NB-IoT
+#define DEFAULT_FORCE_OPERATOR "0" // Use "0" for auto operator
+#define DEFAULT_BAND "524416" // R4X bandmask for band 8,20
+// #define DEFAULT_BAND "8,20" // N2X select bands 8 and 20
 
 #define DEFAULT_APN_USER ""
 #define DEFAULT_APN_PASSWORD ""
@@ -384,7 +383,7 @@ void transmit()
         cayenneRecord.addTemperature(3, temp);
 
         // Copy out the formatted record
-        network.transmit(cayenneRecord.getBuffer(), cayenneRecord.getSize(), ((uint32_t)params.getRXtimeout() * 1000));
+        network.transmit(cayenneRecord.getBuffer(), cayenneRecord.getSize(), ((uint32_t)params.getRXtimeout() * 1000), pendingReportDataRecord.getBatteryVoltage());
     }
     else {
         const size_t maxPayloadSize = 51;
@@ -430,7 +429,7 @@ void transmit()
             sendBufferSize += record.getSize();
         }
 
-        network.transmit(sendBuffer, sendBufferSize, ((uint32_t)params.getRXtimeout() * 1000));
+        network.transmit(sendBuffer, sendBufferSize, ((uint32_t)params.getRXtimeout() * 1000), pendingReportDataRecord.getBatteryVoltage());
     }
 }
 
@@ -560,7 +559,10 @@ void initOnTheMove()
 void systemSleep()
 {
     MODEM_STREAM.flush();
+
+#ifndef ARDUINO_SODAQ_ONE
     network.setActive(false);
+#endif
 
     setLedColor(NONE);
     setGpsActive(false); // explicitly disable after resetting the pins
@@ -569,9 +571,11 @@ void systemSleep()
     if (!params.getIsDebugOn() || ((long)&DEBUG_STREAM != (long)&SerialUSB)) {
         noInterrupts();
         if (!(sodaq_wdt_flag || minuteFlag)) {
+            SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
             interrupts();
-
             __WFI(); // SAMD sleep
+            // Enable systick interrupt
+            SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
         }
         interrupts();
     }
@@ -935,7 +939,7 @@ bool getGpsFixAndTransmit()
 
         return false;
     }
-    
+
     bool isSuccessful = false;
     setGpsActive(true);
 
@@ -1212,7 +1216,10 @@ void onConfigReset(void)
 #endif
 
 #ifdef DEFAULT_BAND
-    params._band = DEFAULT_BAND;
+    // fail if the defined string is larger than what is expected in the config
+    BUILD_BUG_ON(sizeof(DEFAULT_BAND) > sizeof(params._band));
+
+    strcpy(params._band, DEFAULT_BAND);
 #endif
 
 #ifdef DEFAULT_TARGET_IP

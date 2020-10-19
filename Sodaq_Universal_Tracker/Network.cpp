@@ -112,7 +112,7 @@ bool Network::init(Uart & modemStream, DataReceiveCallback callback, uint32_t(*g
     }
 }
 
-uint8_t Network::transmit(uint8_t * buffer, uint8_t size, uint32_t rxTimeout)
+uint8_t Network::transmit(uint8_t * buffer, uint8_t size, uint32_t rxTimeout, uint8_t batLevel)
 {
     switch (_networkType) {
     case NETWORK_TYPE_NBIOT_N2: {
@@ -124,7 +124,7 @@ uint8_t Network::transmit(uint8_t * buffer, uint8_t size, uint32_t rxTimeout)
         return r4xNetwork.transmit(buffer, size, rxTimeout);
     }
     case NETWORK_TYPE_LORA: {
-        return LoRa.transmit(buffer, size);
+        return LoRa.transmit(buffer, size, -1, batLevel);
     }
     case NETWORK_TYPE_2G_3G: {
         return network3G.transmit(buffer, size, rxTimeout);
@@ -221,6 +221,7 @@ bool Network::setActive(bool on)
     }
     return success;
 }
+
 
 uint32_t Network::getBaudRate()
 {

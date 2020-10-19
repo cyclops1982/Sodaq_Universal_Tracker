@@ -60,6 +60,7 @@ public:
 
     void setAckOn(bool on) { _isAckOn = on; };
     bool isAckOn() { return _isAckOn; };
+    
 
     void setReconnectOnTransmissionOn(bool on) { _isReconnectOnTransmissionOn = on; };
     bool isReconnectOnTransmissionOn() { return _isReconnectOnTransmissionOn; };
@@ -73,11 +74,12 @@ public:
     void setSpreadingFactor(uint8_t spreadingFactor) { _spreadingFactor = spreadingFactor; };
     void setPowerIndex(uint8_t powerIndex) { _powerIndex = powerIndex; };
     void setActive(bool on);
+    
     bool isInitialized() { return _isInitialized; };
     void setInitialized(bool isInitialized) { _isInitialized = isInitialized; }
     uint8_t getHWEUI(uint8_t* hweui, uint8_t size);
     bool join();
-    uint8_t transmit(uint8_t* buffer, uint8_t size, int16_t overrideLoRaPort = -1);
+    uint8_t transmit(uint8_t* buffer, uint8_t size, int16_t overrideLoRaPort = -1, uint8_t batLevel = 0);
     void extendSleep();
     void loopHandler();
 private:
@@ -106,6 +108,7 @@ private:
     bool convertAndCheckHexArray(uint8_t* result, const char* hex, size_t resultSize, bool allowZeros = false);
     bool joinAbp();
     bool joinOtaa();
+    bool setBatLevel(uint8_t batLevel);
     void retransmissionUpdateOnSuccess();
     void retransmissionUpdateOnFailure();
 };

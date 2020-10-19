@@ -202,6 +202,11 @@ bool Sodaq_RN2483::saveState()
   return expectString(STR_RESULT_OK, 5000);
 }
 
+bool Sodaq_RN2483::setBatLevel(uint8_t batLevel) {
+    return setMacParam(STR_BAT, batLevel) 
+        && saveState();
+}
+
 // Sends the given payload without acknowledgement.
 // Returns 0 (NoError) when transmission is successful or one of the MacTransmitErrorCodes otherwise.
 uint8_t Sodaq_RN2483::send(uint8_t port, const uint8_t* payload, uint8_t size)

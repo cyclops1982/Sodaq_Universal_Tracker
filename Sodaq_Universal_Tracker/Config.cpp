@@ -77,7 +77,7 @@ void ConfigParams::reset()
     _alternativeFixFromMinutes = 0;
     _alternativeFixToHours = 0;
     _alternativeFixToMinutes = 0;
-    _gpsFixTimeout = 120;
+    _gpsFixTimeout = 10;
 
     memset(_devAddrOrEUI, 0x30, sizeof(_devAddrOrEUI) - 1);
     _devAddrOrEUI[sizeof(_devAddrOrEUI) - 1] = '\0';
@@ -100,7 +100,9 @@ void ConfigParams::reset()
     memset(_apnPassword, 0x30, sizeof(_apnPassword) - 1);
     _apnPassword[sizeof(_apnPassword) - 1] = '\0';
 
-    _band = 0;
+    memset(_band, 0x30, sizeof(_band) - 1);
+    _band[sizeof(_band) - 1] = '\0';
+
     _rxTimeout = 15;
 
     memcpy(_targetIP, "0.0.0.0", sizeof("0.0.0.0"));
@@ -122,11 +124,11 @@ void ConfigParams::reset()
     _onTheMoveTimeout = 10;
 
     _loraPort = 1;
-    _isAdrOn = 1;
-    _isAckOn = 1;
-    _spreadingFactor = 7;
+    _isAdrOn = 0;
+    _isAckOn = 0;
+    _spreadingFactor = 10;
     _powerIndex = 1;
-    _gpsMinSatelliteCount = 4;
+    _gpsMinSatelliteCount = 6;
 
     _isLedEnabled = 0;
     _isDebugOn = 1;
@@ -167,7 +169,7 @@ static const Command args[] = {
     { "Alt. Fix From (MM)        ", "affm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromMinutes },
     { "Alt. Fix To (HH)          ", "afth=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToHours },
     { "Alt. Fix To (MM)          ", "aftm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToMinutes },
-    { "GPS Fix Timeout (sec)     ", "gft=", Command::set_uint16, Command::show_uint16, &params._gpsFixTimeout },
+    { "GPS Fix Timeout (sec)     ", "gft=", Command::set_uint8, Command::show_uint8, &params._gpsFixTimeout },
     { "Minimum sat count         ", "sat=", Command::set_uint8, Command::show_uint8, &params._gpsMinSatelliteCount },
     { "Num Coords to Upload      ", "num=", Command::set_uint8, Command::show_uint8, &params._coordinateUploadCount },
     { "On-the-move Functionality ", 0,      0,                  Command::show_title, 0 },
@@ -198,8 +200,8 @@ static const Command args[] = {
     { "MNO Profile               ", "mno=", Command::set_uint8, Command::show_uint8, &params._mnoProfile },
     { "APN user                  ", "apnu=", Command::set_string, Command::show_string, params._apnUser, sizeof(params._apnUser) },
     { "APN password              ", "apnp=", Command::set_string, Command::show_string, params._apnPassword, sizeof(params._apnPassword) },
-    { "NB-IoT Band               ", "bnd=", Command::set_uint8, Command::show_uint8, &params._band },
-    { "Target IP                 ", "ip=",  Command::set_string, Command::show_string, params._targetIP, sizeof(params._targetIP) },
+    { "Band Info                 ", "bnd=", Command::set_string,  Command::show_string, params._band, sizeof(params._band) },
+    { "Target IP or DNS          ", "ip=",  Command::set_string, Command::show_string, params._targetIP, sizeof(params._targetIP) },
     { "Target port               ", "prt=", Command::set_uint16, Command::show_uint16, &params._targetPort },
     { "Response Timeout          ", "rxto=", Command::set_uint8, Command::show_uint8, &params._rxTimeout },
 #endif
@@ -299,6 +301,11 @@ bool ConfigParams::checkConfig(Stream& stream)
 
     if (_isDebugOn > 1) {
         stream.println("Debug must be either 0 or 1");
+        fail = true;
+    }
+
+    if (_gpsFixTimeout > 250) {
+        stream.println("GPS fix timeout must not be more than 250 seconds");
         fail = true;
     }
 

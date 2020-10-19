@@ -119,6 +119,9 @@ class Sodaq_RN2483
     // Saves the LoRaWAN Class A protocol configuration parameters to the user EEPROM.
     bool saveState();
 
+    // Set battery level for Lora Status update
+    bool setBatLevel(uint8_t batLevel);
+
     // Sets the optional "Diagnostics and Debug" stream.
     void setDiag(Stream& stream) { _diagStream = &stream; };
 
