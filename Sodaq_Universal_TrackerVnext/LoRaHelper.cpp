@@ -85,7 +85,7 @@ void LoRaHelper::init(Sodaq_RN2483& rn2483, uint32_t(*getNow)())
 * Converts the given hex array and returns true if it is valid hex and non-zero.
 * "hex" is assumed to be 2*resultSize bytes.
 */
-bool LoRaHelper::convertAndCheckHexArray(uint8_t* result, const char* hex, size_t resultSize)
+bool LoRaHelper::convertAndCheckHexArray(uint8_t* result, const char* hex, size_t resultSize, bool allowZeros)
 {
     bool foundNonZero = false;
 
@@ -108,6 +108,11 @@ bool LoRaHelper::convertAndCheckHexArray(uint8_t* result, const char* hex, size_
         outputIndex++;
     }
 
+    if (allowZeros) {
+        return true;
+    }
+
+
     return foundNonZero;
 }
 
@@ -118,7 +123,7 @@ bool LoRaHelper::joinOtaa()
     uint8_t appKey[16];
 
     bool allParametersValid = convertAndCheckHexArray((uint8_t*)devEui, _devAddrOrEUI, sizeof(devEui))
-        && convertAndCheckHexArray((uint8_t*)appEui, _appSKeyOrEUI, sizeof(appEui))
+        && convertAndCheckHexArray((uint8_t*)appEui, _appSKeyOrEUI, sizeof(appEui), true)
         && convertAndCheckHexArray((uint8_t*)appKey, _nwSKeyOrAppKey, sizeof(appKey));
 
     // check the parameters first
