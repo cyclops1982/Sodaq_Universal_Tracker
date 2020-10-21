@@ -71,13 +71,13 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 1;
+    _defaultFixInterval = 10;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
     _alternativeFixToHours = 0;
     _alternativeFixToMinutes = 0;
-    _gpsFixTimeout = 10;
+    _gpsFixTimeout = 120;
 
     memset(_devAddrOrEUI, 0x30, sizeof(_devAddrOrEUI) - 1);
     _devAddrOrEUI[sizeof(_devAddrOrEUI) - 1] = '\0';
@@ -126,12 +126,12 @@ void ConfigParams::reset()
     _loraPort = 1;
     _isAdrOn = 0;
     _isAckOn = 0;
-    _spreadingFactor = 10;
+    _spreadingFactor = 12;
     _powerIndex = 1;
     _gpsMinSatelliteCount = 6;
 
     _isLedEnabled = 0;
-    _isDebugOn = 1;
+    _isDebugOn = 0;
 
     _shouldRetryConnectionOnSend = true;
 
