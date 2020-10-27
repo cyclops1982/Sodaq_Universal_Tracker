@@ -51,8 +51,8 @@ POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
-#define VERSION "1.0.5"
-#define STARTUP_DELAY 1000
+#define VERSION "1.0.7"
+#define STARTUP_DELAY 500
 
 // #define DEFAULT_LORA_PORT 2
 #define DEFAULT_IS_OTAA_ENABLED 1
@@ -308,6 +308,7 @@ void loop()
     }
 
     if (updateOnTheMoveTimestampFlag) {
+        debugPrintln("Updating On the Move timestamp flag")
         lastOnTheMoveActivationTimestamp = getNow();
         updateOnTheMoveTimestampFlag = false;
     }
@@ -741,7 +742,7 @@ void accelerometerInt1Handler()
             setLedColor(YELLOW);
         }
 
-        // debugPrintln("On-the-move is triggered");
+        debugPrintln("On-the-move is triggered");
 
         isOnTheMoveActivated = true;
         updateOnTheMoveTimestampFlag = true;
@@ -842,6 +843,7 @@ void runAlternativeFixEvent(uint32_t now)
 void runOnTheMoveFixEvent(uint32_t now)
 {
     if (isOnTheMoveActivated) {
+        debugPrintln("runOnTheMoveFixEvent0 - isOnTheMoveActivated");
         if (now - lastOnTheMoveActivationTimestamp < params.getOnTheMoveTimeout() * 60) {
             debugPrintln("On-the-move fix event started.");
             getGpsFixAndTransmit();
@@ -894,10 +896,10 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution* NavPvt)
 
 
     // note: db_printf gets enabled/disabled according to the "DEBUG" define (ublox.cpp)
-    ublox.db_printf("%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%d valid=%2.2x lat=%d lon=%d sats=%d fixType=%2.2x\r\n",
+    ublox.db_printf("%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%d valid=%2.2x lat=%d lon=%d sats=%d fixType=%2.2x flags=%2.2x hAcc=%u vAcc=%u\r\n",
         NavPvt->year, NavPvt->month, NavPvt->day,
         NavPvt->hour, NavPvt->minute, NavPvt->seconds, NavPvt->nano, NavPvt->valid,
-        NavPvt->lat, NavPvt->lon, NavPvt->numSV, NavPvt->fixType);
+        NavPvt->lat, NavPvt->lon, NavPvt->numSV, NavPvt->fixType, NavPvt->flags, NavPvt->hAcc, NavPvt->vAcc);
 
     // sync the RTC time
     if ((NavPvt->valid & GPS_TIME_VALIDITY) == GPS_TIME_VALIDITY) {
@@ -917,6 +919,8 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution* NavPvt)
         pendingReportDataRecord.setLong(NavPvt->lon);
         pendingReportDataRecord.setSatelliteCount(NavPvt->numSV);
         pendingReportDataRecord.setSpeed((NavPvt->gSpeed * 36) / 10000); // mm/s converted to km/h
+        pendingReportDataRecord.setHAccuracy(NavPvt->hAcc);
+        pendingReportDataRecord.setVAccuracy(NavPvt->vAcc);
 
         isPendingReportDataRecordNew = true;
 
@@ -1027,6 +1031,8 @@ void setGpsActive(bool on)
         sodaq_wdt_safe_delay(100);
 
         PortConfigurationDDC pcd;
+        NavigationEngineSetting nav;
+        NavigationEngineSetting nav2;
 
         uint8_t maxRetries = 6;
         int8_t retriesLeft;
@@ -1053,6 +1059,50 @@ void setGpsActive(bool on)
 
             return;
         }
+
+        retriesLeft = maxRetries;
+        while (!ublox.getNavParameters(&nav) && (retriesLeft-- > 0)) {
+            debugPrintln("Retrying ublox.getNavParameters(&nav)...");
+            sodaq_wdt_safe_delay(15);
+        }
+        if (retriesLeft == -1) {
+            debugPrintln("ublox.getNavParameters(&nav) failed!");
+
+            return;
+        }
+
+        debugPrintln(nav.dynModel);
+        debugPrintln(nav.pAcc);
+        nav.mask = 4;
+        nav.dynModel = 3;
+        nav.pAcc = 10;
+        retriesLeft = maxRetries;
+        while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0)) {
+            debugPrintln("Retrying ublox.setNavParameters(&nav)...");
+            sodaq_wdt_safe_delay(15);
+        }
+        if (retriesLeft == -1) {
+            debugPrintln("ublox.setNavParameters(&nav) failed!");
+
+            return;
+        }
+
+        
+        retriesLeft = maxRetries;
+        while (!ublox.getNavParameters(&nav2) && (retriesLeft-- > 0)) {
+            debugPrintln("Retrying ublox.getNavParameters(&nav)...");
+            sodaq_wdt_safe_delay(15);
+        }
+        if (retriesLeft == -1) {
+            debugPrintln("ublox.getNavParameters(&nav) failed!");
+
+            return;
+        }
+
+        debugPrintln(nav2.dynModel);
+        debugPrintln(nav2.pAcc);
+
+
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;

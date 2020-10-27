@@ -71,13 +71,13 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 10;
+    _defaultFixInterval = 1;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
     _alternativeFixToHours = 0;
     _alternativeFixToMinutes = 0;
-    _gpsFixTimeout = 120;
+    _gpsFixTimeout = 180;
 
     memset(_devAddrOrEUI, 0x30, sizeof(_devAddrOrEUI) - 1);
     _devAddrOrEUI[sizeof(_devAddrOrEUI) - 1] = '\0';
@@ -118,10 +118,10 @@ void ConfigParams::reset()
     _coordinateUploadCount = 1;
     _repeatCount = 0;
 
-    _accelerationPercentage = 0;
-    _accelerationDuration = 0;
-    _onTheMoveFixInterval = 1;
-    _onTheMoveTimeout = 10;
+    _accelerationPercentage = 15;
+    _accelerationDuration = 0; // this is a number that is not seconds or minutes. It depends on the ODS mode and is than a part of the frequency of the accelerometer.
+    _onTheMoveFixInterval = 1; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
+    _onTheMoveTimeout = 1; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
 
     _loraPort = 1;
     _isAdrOn = 0;
@@ -131,7 +131,7 @@ void ConfigParams::reset()
     _gpsMinSatelliteCount = 6;
 
     _isLedEnabled = 0;
-    _isDebugOn = 0;
+    _isDebugOn = 1;
 
     _shouldRetryConnectionOnSend = true;
 
