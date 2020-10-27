@@ -66,6 +66,29 @@ typedef struct __attribute__((packed,aligned(1))) PortConfigurationDDC {
     uint16_t    reserved5;
 } PortConfigurationDDC;
 
+
+typedef struct __attribute__((packed, aligned(1))) NavigationEngineSetting {
+    uint16_t    mask;
+    uint8_t     dynModel;
+    uint8_t     fixMode;
+    int32_t     fixedAlt;
+    uint32_t    fixedAltVar;
+    int8_t      minElev;
+    uint8_t     drLimit;
+    uint16_t    pDop;
+    uint16_t    tDop;
+    uint16_t    pAcc;
+    uint16_t    tAcc;
+    uint8_t     staticHoldThresh;
+    uint8_t     dgnssTimeout;
+    uint8_t     cnoThreshNumSVs;
+    uint8_t     cnoThresh;
+    uint8_t     reserved1[2];
+    uint16_t    staticHoldMaxDist;
+    uint8_t     utcStandard;
+    uint8_t     reserved2[5];
+} NavigationEngineSetting;
+
 typedef struct __attribute__((packed,aligned(1))) TimePulseParameters {
     uint8_t     tpIdx;
     uint8_t     reserved0;
@@ -91,9 +114,9 @@ typedef struct __attribute__((packed,aligned(1))) TimePulseTimedata {
 } TimePulseTimedata;
 
 enum Messages {
-    UBX_NAV_PVT = 0x0107,
-    UBX_TIM_TP  = 0x0d01,
-    NMEA_CGA    = 0xf000,
+    UBX_NAV_PVT  = 0x0107,
+    UBX_TIM_TP   = 0x0d01,
+    NMEA_CGA     = 0xf000,
     NMEA_GLL,
     NMEA_GSA,
     NMEA_GSV,
@@ -104,11 +127,16 @@ enum Messages {
     NMEA_ZDA,
     NMEA_GBS,
     NMEA_DTM,
-    NMEA_GNS    = 0xf00d,
-    NMEA_GPQ    = 0xf040,
+    NMEA_GNS     = 0xf00d,
+    NMEA_GPQ     = 0xf040,
     NMEA_TXT,
     NMEA_GNQ,
-    NMEA_GLQ
+    NMEA_GLQ,
+    UBX_ACK_NAK  = 0x0500,
+    UBX_ACK_ACK  = 0x0501,
+    UBX_CFG_NAV5 = 0x0624,
+    UBX_CFG_NAV5X= 0x0623,
+
 };
 
 class UBlox {
@@ -128,6 +156,9 @@ public:
     bool    getTimePulseParameters(uint8_t tpIdx,TimePulseParameters* tpp);
     bool    getPortConfigurationDDC(PortConfigurationDDC* pcd);
 
+    bool    getNavParameters(NavigationEngineSetting *nav);
+    bool    setNavParameters(NavigationEngineSetting *nav);
+
     void    GetPeriodic();
     void    GetPeriodic(int bytes);
     void    enable ();
@@ -141,7 +172,7 @@ public:
 
     // Debug helper
     void    db_printf(const char *message,...);
-
+    void    print_buffer();
     //
     int     process(uint8_t);
     void    sendraw();

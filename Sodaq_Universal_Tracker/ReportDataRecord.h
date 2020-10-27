@@ -49,7 +49,7 @@ POSSIBILITY OF SUCH DAMAGE.
 //    uint8_t SatelliteCount;
 //    uint8_t TimeToFix;
 
-#define REPORT_DATA_RECORD_HEADER "Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix"
+#define REPORT_DATA_RECORD_HEADER "Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy"
 
 #define REPORT_DATA_FIELD_SIZES sizeof(uint32_t), \
                                 sizeof(uint8_t), \
@@ -60,7 +60,9 @@ POSSIBILITY OF SUCH DAMAGE.
                                 sizeof(uint16_t), \
                                 sizeof(uint8_t), \
                                 sizeof(uint8_t), \
-                                sizeof(uint8_t)
+                                sizeof(uint8_t), \
+                                sizeof(uint32_t), \
+                                sizeof(uint32_t)
 
 #define REPORT_DATA_BUFFER_SIZE (SUM(REPORT_DATA_FIELD_SIZES))
 #define REPORT_DATA_FIELD_COUNT (COUNT(REPORT_DATA_FIELD_SIZES))
@@ -99,6 +101,13 @@ public:
     int16_t getAltitude() const { return getFieldValue<int16_t>(Altitude); }
     void setAltitude(int16_t value) const { setFieldValue(Altitude, value); }
 
+    uint32_t getHAccuracy() const { return getFieldValue<uint32_t>(hAccuracy);}
+    void setHAccuracy(uint32_t value) const { setFieldValue(hAccuracy, value); }
+
+    uint32_t getVAccuracy() const { return getFieldValue<uint32_t>(vAccuracy);}
+    void setVAccuracy(uint32_t value) const { setFieldValue(vAccuracy, value); }
+
+
     uint16_t getSpeed() const { return getFieldValue<uint16_t>(Speed); }
     void setSpeed(uint16_t value) const { setFieldValue(Speed, value); }
 
@@ -116,7 +125,7 @@ protected:
 private:
     uint8_t buffer[REPORT_DATA_BUFFER_SIZE];
 
-    enum Fields { Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix };
+    enum Fields { Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy };
 };
 
 #endif /* REPORTDATARECORD_H_ */
