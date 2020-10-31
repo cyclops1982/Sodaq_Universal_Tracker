@@ -129,6 +129,7 @@ void ConfigParams::reset()
     _spreadingFactor = 12;
     _powerIndex = 1;
     _gpsMinSatelliteCount = 4;
+    _gpsPosAccuracy = 0; // Default to 0 as it would indicate that we use the default fix accuracy.
 
     _isLedEnabled = 0;
     _isDebugOn = 1;
@@ -162,6 +163,7 @@ void ConfigParams::commit(bool forced)
 }
 
 static const Command args[] = {
+<<<<<<< HEAD
     { "GPS                       ", 0,      0,                  Command::show_title, 0, 0 },
     { "Fix Interval (min)        ", "fi=", Command::set_uint16, Command::show_uint16, &params._defaultFixInterval, 0 },
     { "Alt. Fix Interval (min)   ", "afi=", Command::set_uint16, Command::show_uint16, &params._alternativeFixInterval, 0 },
@@ -177,6 +179,24 @@ static const Command args[] = {
     { "Acceleration Duration     ", "acd=", Command::set_uint8, Command::show_uint8, &params._accelerationDuration, 0 },
     { "Fix Interval (min)        ", "acf=", Command::set_uint8, Command::show_uint8, &params._onTheMoveFixInterval, 0 },
     { "Timeout (min)             ", "act=", Command::set_uint8, Command::show_uint8, &params._onTheMoveTimeout, 0 },
+=======
+    { "GPS                       ", 0,      0,                  Command::show_title, 0 },
+    { "Fix Interval (min)        ", "fi=", Command::set_uint16, Command::show_uint16, &params._defaultFixInterval },
+    { "Alt. Fix Interval (min)   ", "afi=", Command::set_uint16, Command::show_uint16, &params._alternativeFixInterval },
+    { "Alt. Fix From (HH)        ", "affh=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromHours },
+    { "Alt. Fix From (MM)        ", "affm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromMinutes },
+    { "Alt. Fix To (HH)          ", "afth=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToHours },
+    { "Alt. Fix To (MM)          ", "aftm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToMinutes },
+    { "GPS Fix Timeout (sec)     ", "gft=", Command::set_uint8, Command::show_uint8, &params._gpsFixTimeout },
+    { "GPS Postition Accuracy (m)", "gpa=", Command::set_uint16, Command::show_uint16, &params._gpsPosAccuracy },
+    { "Minimum sat count         ", "sat=", Command::set_uint8, Command::show_uint8, &params._gpsMinSatelliteCount },
+    { "Num Coords to Upload      ", "num=", Command::set_uint8, Command::show_uint8, &params._coordinateUploadCount },
+    { "On-the-move Functionality ", 0,      0,                  Command::show_title, 0 },
+    { "Acceleration% (100% = 8g) ", "acc=", Command::set_uint8, Command::show_uint8, &params._accelerationPercentage },
+    { "Acceleration Duration     ", "acd=", Command::set_uint8, Command::show_uint8, &params._accelerationDuration },
+    { "Fix Interval (min)        ", "acf=", Command::set_uint8, Command::show_uint8, &params._onTheMoveFixInterval },
+    { "Timeout (min)             ", "act=", Command::set_uint8, Command::show_uint8, &params._onTheMoveTimeout },
+>>>>>>> Add GPS Position Accuracy + Coding style
 #if defined(ARDUINO_SODAQ_ONE)
     { "LoRa                      ", 0,      0,                  Command::show_title, 0, 0 },
     { "OTAA Mode (OFF=0 / ON=1)  ", "otaa=", Command::set_uint8, Command::show_uint8, &params._isOtaaEnabled, 0 },
@@ -317,6 +337,10 @@ bool ConfigParams::checkConfig(Stream& stream)
     if (_networkType == 0) {
         stream.println("Network type should be set");
         fail = true;
+    }
+
+    if (_gpsPosAccuracy < 3 && _gpsPosAccuracy != 0) {
+        stream.println("GPS Postition Accuracy must be 0 (for default) or above 3");
     }
 
     return !fail;

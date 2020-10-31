@@ -334,6 +334,7 @@ void UBlox::CfgMsg(uint16_t Msg, uint8_t rate)
     this->wait();
 }
 
+// UBX-CFG-NAV5 / 32.0.19.1
 bool UBlox::getNavParameters(NavigationEngineSetting *nav) {
     uint8_t buffer[6];
     buffer[0] = 0x06;
@@ -345,6 +346,7 @@ bool UBlox::getNavParameters(NavigationEngineSetting *nav) {
     return this->wait(0x0624, sizeof(NavigationEngineSetting), nav);
 }
 
+// UBX-CFG-NAV5 / 32.0.19.1
 bool UBlox::setNavParameters(NavigationEngineSetting *nav) {
     uint8_t buffer[40];
     buffer[0] = 0x06;

@@ -92,6 +92,7 @@ GPS
   Alt. Fix To (HH)           (afth=): 0
   Alt. Fix To (MM)           (aftm=): 0
   GPS Fix Timeout (sec)      (gft=): 120
+  GPS Postition Accuracy (m) (gpa=): 0
   Minimum sat count          (sat=): 4
   Num Coords to Upload       (num=): 1
 
@@ -150,6 +151,9 @@ the best GPS fix found (if any) is used.
 For redundancy we could configure a repeat count. The value of the repeat count tells us to send the Lora frame an additional number of times (default 0) for redundancy.
 
 The Lora frame contains the following data. The minimum frame size is 21 bytes, the maximum frame size 51 bytes, depending on the number of coordinates we have configured to be sent.
+
+The `GPS Postition Accuracy` setting allows you to set the accuracy of the fix. The u-blox eva-m8 seems to have this default set to 100m. 0 keeps the default. A value above 3 must be provided as the u-blox eva-m8 cannot be more accurate than this. Use this to get a more accurate fix.
+
 
 ### Band settings
 
