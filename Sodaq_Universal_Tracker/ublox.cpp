@@ -358,7 +358,7 @@ bool UBlox::setNavParameters(NavigationEngineSetting *nav) {
 }
 
 
-
+// 32.10.38.3
 int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
 {
     // Warning this overwrites the receive buffer !!!
@@ -373,7 +373,7 @@ int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
 }
 
 
-
+// 32.10.38.2 
 bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)
 {
     uint8_t buffer[5];
@@ -389,6 +389,7 @@ bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)
     return this->wait(0x0631, sizeof(TimePulseParameters), tpp);
 }
 
+// 32.10.25.2
 int UBlox::setPortConfigurationDDC(PortConfigurationDDC *pcd)
 {
     // Warning this overwrites the receive buffer !!!
@@ -402,6 +403,7 @@ int UBlox::setPortConfigurationDDC(PortConfigurationDDC *pcd)
     return this->wait();
 }
 
+// 32.10.25.1
 bool UBlox::getPortConfigurationDDC(PortConfigurationDDC *pcd)
 {
     uint8_t buffer[4];
