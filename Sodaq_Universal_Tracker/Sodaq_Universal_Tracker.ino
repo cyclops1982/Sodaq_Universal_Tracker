@@ -61,8 +61,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #define DEFAULT_NWSKEY_OR_APPKEY "05B2B40BBFCD3C3D40429B959E3179EF"
 
 #define GPS_TIME_VALIDITY 0b00000011 // date and time (but not fully resolved)
-#define GPS_FIX_FLAGS 0b00000001 // just gnssFixOK
-#define GPS_COMM_CHECK_TIMEOUT 3 // seconds
+#define GPS_FIX_FLAGS 0b00000001     // just gnssFixOK
+#define GPS_COMM_CHECK_TIMEOUT 3     // seconds
 
 #define MAX_RTC_EPOCH_OFFSET 25
 
@@ -81,13 +81,21 @@ POSSIBILITY OF SUCH DAMAGE.
 #define LOW_NIBBLE(i) (i & 0x0F)
 
 // macro to do compile time sanity checks / assertions
-#define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
+#define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2 * !!(condition)]))
 
 #define consolePrint(x) CONSOLE_STREAM.print(x)
 #define consolePrintln(x) CONSOLE_STREAM.println(x)
 
-#define debugPrint(x) if (params.getIsDebugOn()) { DEBUG_STREAM.print(x); }
-#define debugPrintln(x) if (params.getIsDebugOn()) { DEBUG_STREAM.println(x); }
+#define debugPrint(x)          \
+    if (params.getIsDebugOn()) \
+    {                          \
+        DEBUG_STREAM.print(x); \
+    }
+#define debugPrintln(x)          \
+    if (params.getIsDebugOn())   \
+    {                            \
+        DEBUG_STREAM.println(x); \
+    }
 
 #ifndef LORA_RESET
 #define LORA_RESET -1
@@ -113,8 +121,8 @@ Sodaq_LSM303AGR accelerometer;
 Network network;
 
 #define DEFAULT_APN "nb.inetd.gdsp" // APN Vodafone NB-IoT
-#define DEFAULT_FORCE_OPERATOR "0" // Use "0" for auto operator
-#define DEFAULT_BAND "524416" // R4X bandmask for band 8,20
+#define DEFAULT_FORCE_OPERATOR "0"  // Use "0" for auto operator
+#define DEFAULT_BAND "524416"       // R4X bandmask for band 8,20
 // #define DEFAULT_BAND "8,20" // N2X select bands 8 and 20
 
 #define DEFAULT_APN_USER ""
@@ -124,18 +132,18 @@ Network network;
 #define DEFAULT_TARGET_PORT 1
 
 #ifdef ARDUINO_SODAQ_SARA
-    #define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_NOTYPE
-    #define MODEM_STREAM Serial1
+#define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_NOTYPE
+#define MODEM_STREAM Serial1
 #elif defined(ARDUINO_SODAQ_ONE)
-    #define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_LORA;
-    #define MODEM_STREAM Serial1
+#define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_LORA;
+#define MODEM_STREAM Serial1
 #elif defined(ARDUINO_SODAQ_SFF)
-    #define MODEM_STREAM Serial1
-    #define MODEM_STREAM_RX (PIN_SERIAL1_RX)
-    #define MODEM_STREAM_TX (PIN_SERIAL1_TX)
-    #define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_NOTYPE;
+#define MODEM_STREAM Serial1
+#define MODEM_STREAM_RX (PIN_SERIAL1_RX)
+#define MODEM_STREAM_TX (PIN_SERIAL1_TX)
+#define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_NOTYPE;
 #else
-    #error "No network type defined"
+#error "No network type defined"
 #endif
 
 static UdpHeader defaultUdpHeader;
@@ -181,17 +189,17 @@ void setGpsActive(bool on);
 void setAccelerometerTempSensorActive(bool on);
 bool isAlternativeFixEventApplicable();
 bool isCurrentTimeOfDayWithin(uint32_t daySecondsFrom, uint32_t daySecondsTo);
-void delegateNavPvt(NavigationPositionVelocityTimeSolution* NavPvt);
+void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt);
 bool getGpsFixAndTransmit();
 uint8_t getBatteryVoltage();
 int8_t getBoardTemperature();
-void updateConfigOverTheAir(const uint8_t* buffer, uint16_t size);
+void updateConfigOverTheAir(const uint8_t *buffer, uint16_t size);
 void onConfigReset(void);
 void setupBOD33();
 bool initUdpHeader();
 
-static void printCpuResetCause(Stream& stream);
-static void printBootUpMessage(Stream& stream);
+static void printCpuResetCause(Stream &stream);
+static void printBootUpMessage(Stream &stream);
 
 void setup()
 {
@@ -207,7 +215,8 @@ void setup()
     sodaq_wdt_reset();
 
     CONSOLE_STREAM.begin(CONSOLE_BAUD);
-    if ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM) {
+    if ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM)
+    {
         DEBUG_STREAM.begin(DEBUG_BAUD);
     }
 
@@ -230,14 +239,16 @@ void setup()
 
     // disable the watchdog only for the boot menu
     // only show the boot menu if it is not a wdt reset
-    if ((PM->RCAUSE.reg & PM_RCAUSE_WDT) == 0) {
+    if ((PM->RCAUSE.reg & PM_RCAUSE_WDT) == 0)
+    {
         sodaq_wdt_disable();
         handleBootUpCommands();
         sodaq_wdt_enable(WDT_PERIOD_8X);
     }
 
     // make sure the debug option is honored
-    if (params.getIsDebugOn() && ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM)) {
+    if (params.getIsDebugOn() && ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM))
+    {
         DEBUG_STREAM.begin(DEBUG_BAUD);
     }
 
@@ -249,7 +260,8 @@ void setup()
     accelerometer.disableMagnetometer();
     pinMode(MAG_INT, OUTPUT);
     digitalWrite(MAG_INT, LOW);
-    if (params.getAccelerationPercentage() > 0) {
+    if (params.getAccelerationPercentage() > 0)
+    {
         initOnTheMove();
 
         isOnTheMoveInitialized = true;
@@ -257,7 +269,8 @@ void setup()
 
     initRtcTimer();
 
-    if (!initUdpHeader()) {
+    if (!initUdpHeader())
+    {
         debugPrintln("Error: Could not initialize the UDP Header!");
     }
 
@@ -267,7 +280,8 @@ void setup()
     sodaq_wdt_reset();
 
     // disable the USB if not needed for debugging
-    if (!params.getIsDebugOn() || ((long)&DEBUG_STREAM != (long)&SerialUSB)) {
+    if (!params.getIsDebugOn() || ((long)&DEBUG_STREAM != (long)&SerialUSB))
+    {
         consolePrintln("The USB is going to be disabled now.");
         debugPrintln("The USB is going to be disabled now.");
 
@@ -279,19 +293,22 @@ void setup()
     }
 
     // disable the debug stream if it is not disabled by the above
-    if (!params.getIsDebugOn() && ((long)&DEBUG_STREAM != (long)&SerialUSB)) {
+    if (!params.getIsDebugOn() && ((long)&DEBUG_STREAM != (long)&SerialUSB))
+    {
         DEBUG_STREAM.flush();
         DEBUG_STREAM.end();
     }
 
     // disable the console stream if it is not disabled by the above,
     // and only if it is different than the debug stream
-    if ((long)&CONSOLE_STREAM != (long)&SerialUSB && ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM)) {
+    if ((long)&CONSOLE_STREAM != (long)&SerialUSB && ((long)&CONSOLE_STREAM != (long)&DEBUG_STREAM))
+    {
         CONSOLE_STREAM.flush();
         CONSOLE_STREAM.end();
     }
 
-    if (getGpsFixAndTransmit()) {
+    if (getGpsFixAndTransmit())
+    {
         setLedColor(GREEN);
         sodaq_wdt_safe_delay(800);
     }
@@ -299,7 +316,8 @@ void setup()
 
 void loop()
 {
-    if (sodaq_wdt_flag) {
+    if (sodaq_wdt_flag)
+    {
         // Reset watchdog
         sodaq_wdt_reset();
         sodaq_wdt_flag = false;
@@ -307,14 +325,17 @@ void loop()
         network.loopHandler();
     }
 
-    if (updateOnTheMoveTimestampFlag) {
+    if (updateOnTheMoveTimestampFlag)
+    {
         debugPrintln("Updating On the Move timestamp flag")
-        lastOnTheMoveActivationTimestamp = getNow();
+            lastOnTheMoveActivationTimestamp = getNow();
         updateOnTheMoveTimestampFlag = false;
     }
 
-    if (minuteFlag) {
-        if (params.getIsLedEnabled()) {
+    if (minuteFlag)
+    {
+        if (params.getIsLedEnabled())
+        {
             setLedColor(BLUE);
         }
 
@@ -365,7 +386,8 @@ int8_t getBoardTemperature()
  */
 void transmit()
 {
-    if (params.getIsCayennePayloadEnabled()) {
+    if (params.getIsCayennePayloadEnabled())
+    {
         // Reset the record
         cayenneRecord.reset();
 
@@ -386,13 +408,14 @@ void transmit()
         // Copy out the formatted record
         network.transmit(cayenneRecord.getBuffer(), cayenneRecord.getSize(), ((uint32_t)params.getRXtimeout() * 1000), pendingReportDataRecord.getBatteryVoltage());
     }
-    else {
+    else
+    {
         const size_t maxPayloadSize = 51;
         uint8_t sendBufferSize = 0;
 
 #if defined(ARDUINO_SODAQ_ONE)
         uint8_t sendBuffer[maxPayloadSize];
-#elif defined(ARDUINO_SODAQ_SFF) || defined (ARDUINO_SODAQ_SARA)
+#elif defined(ARDUINO_SODAQ_SFF) || defined(ARDUINO_SODAQ_SARA)
         const size_t headerSize = sizeof(defaultUdpHeader.Raw);
         uint8_t sendBuffer[headerSize + maxPayloadSize];
 
@@ -407,19 +430,23 @@ void transmit()
 
         // copy the previous coordinates if applicable (-1 because one coordinate is already in the report record)
         GpsFixDataRecord record;
-        for (uint8_t i = 0; i < params.getCoordinateUploadCount() - 1; i++) {
+        for (uint8_t i = 0; i < params.getCoordinateUploadCount() - 1; i++)
+        {
             record.init();
 
             // (skip first record because it is in the report record already)
-            if (!gpsFixLiFoRingBuffer_peek(1 + i, &record)) {
+            if (!gpsFixLiFoRingBuffer_peek(1 + i, &record))
+            {
                 break;
             }
 
-            if (!record.isValid()) {
+            if (!record.isValid())
+            {
                 break;
             }
 
-            if (sendBufferSize + record.getSize() >= sizeof(sendBuffer)) {
+            if (sendBufferSize + record.getSize() >= sizeof(sendBuffer))
+            {
                 debugPrintln("SendBuffer size exceeded when adding gps records.");
                 break;
             }
@@ -443,7 +470,8 @@ bool initUdpHeader()
     // reverse the array
     // (the exaple shows that IMEI = 391855893742972 should be 01 64 64 0F 59 85 7C
     size_t n = sizeof(defaultUdpHeader.Imei);
-    for (size_t i = 0; i < n / 2; ++i) {
+    for (size_t i = 0; i < n / 2; ++i)
+    {
         int tmp = defaultUdpHeader.Imei[i];
         defaultUdpHeader.Imei[i] = defaultUdpHeader.Imei[n - 1 - i];
         defaultUdpHeader.Imei[n - 1 - i] = tmp;
@@ -457,13 +485,14 @@ bool initUdpHeader()
 /**
 * Uses the "receiveBuffer" (received from the network) to update the configuration.
 */
-void updateConfigOverTheAir(const uint8_t* buffer, uint16_t size)
+void updateConfigOverTheAir(const uint8_t *buffer, uint16_t size)
 {
     OverTheAirConfigDataRecord record;
     record.init();
     record.copyFrom(buffer, size);
 
-    if (record.isValid()) {
+    if (record.isValid())
+    {
         params._defaultFixInterval = record.getDefaultFixInterval();
         params._alternativeFixInterval = record.getAlternativeFixInterval();
 
@@ -482,7 +511,8 @@ void updateConfigOverTheAir(const uint8_t* buffer, uint16_t size)
         // apply the rtc timer changes
         resetRtcTimerEvents();
     }
-    else {
+    else
+    {
         debugPrintln("OTAA Config record is not valid!");
     }
 }
@@ -503,14 +533,16 @@ bool initGps()
 
     uint32_t startTime = getNow();
     bool found = false;
-    while (!found && (getNow() - startTime <= GPS_COMM_CHECK_TIMEOUT)) {
+    while (!found && (getNow() - startTime <= GPS_COMM_CHECK_TIMEOUT))
+    {
         sodaq_wdt_reset();
 
         found = ublox.exists();
     }
 
     // check for success
-    if (found) {
+    if (found)
+    {
         setGpsActive(true); // properly turn on before returning
 
         return true;
@@ -536,8 +568,8 @@ void initOnTheMove()
     // Configure EIC to use GCLK1 which uses XOSC32K, XOSC32K is already running in standby
     // This has to be done after the first call to attachInterrupt()
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(GCM_EIC) |
-        GCLK_CLKCTRL_GEN_GCLK1 |
-        GCLK_CLKCTRL_CLKEN;
+                        GCLK_CLKCTRL_GEN_GCLK1 |
+                        GCLK_CLKCTRL_CLKEN;
 
     accelerometer.enableAccelerometer(
         Sodaq_LSM303AGR::LowPowerMode,
@@ -569,9 +601,11 @@ void systemSleep()
     setGpsActive(false); // explicitly disable after resetting the pins
 
     // go to sleep, unless USB is used for debugging
-    if (!params.getIsDebugOn() || ((long)&DEBUG_STREAM != (long)&SerialUSB)) {
+    if (!params.getIsDebugOn() || ((long)&DEBUG_STREAM != (long)&SerialUSB))
+    {
         noInterrupts();
-        if (!(sodaq_wdt_flag || minuteFlag)) {
+        if (!(sodaq_wdt_flag || minuteFlag))
+        {
             SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
             interrupts();
             __WFI(); // SAMD sleep
@@ -593,11 +627,12 @@ void systemSleep()
  */
 void setupBOD33()
 {
-    SYSCTRL->BOD33.bit.LEVEL = 0x07;    // ~1.7 Volt
-    SYSCTRL->BOD33.bit.ACTION = 1;      // Go to Reset
-    SYSCTRL->BOD33.bit.ENABLE = 1;      // Enabled
-    SYSCTRL->BOD33.bit.HYST = 1;        // Hysteresis on
-    while (!SYSCTRL->PCLKSR.bit.B33SRDY) {
+    SYSCTRL->BOD33.bit.LEVEL = 0x07; // ~1.7 Volt
+    SYSCTRL->BOD33.bit.ACTION = 1;   // Go to Reset
+    SYSCTRL->BOD33.bit.ENABLE = 1;   // Enabled
+    SYSCTRL->BOD33.bit.HYST = 1;     // Hysteresis on
+    while (!SYSCTRL->PCLKSR.bit.B33SRDY)
+    {
         /* Wait for synchronization */
     }
 }
@@ -642,7 +677,8 @@ void handleBootUpCommands()
     setShowCcidCallback(showCcid);
     setShowModuleVersionCallback(showModuleVersion);
 
-    do {
+    do
+    {
         showBootMenu(CONSOLE_STREAM);
     } while (!params.checkConfig(CONSOLE_STREAM));
 
@@ -737,8 +773,10 @@ void rtcAlarmHandler()
 */
 void accelerometerInt1Handler()
 {
-    if (digitalRead(ACCEL_INT1)) {
-        if (params.getIsLedEnabled()) {
+    if (digitalRead(ACCEL_INT1))
+    {
+        if (params.getIsLedEnabled())
+        {
             setLedColor(YELLOW);
         }
 
@@ -768,23 +806,27 @@ void resetRtcTimerEvents()
     timer.clearAllEvents();
 
     // Schedule the default fix event (if applicable)
-    if (params.getDefaultFixInterval() > 0) {
+    if (params.getDefaultFixInterval() > 0)
+    {
         timer.every(params.getDefaultFixInterval() * 60, runDefaultFixEvent);
     }
 
     // check if the alternative fix event should be scheduled at all
-    if (params.getAlternativeFixInterval() > 0) {
+    if (params.getAlternativeFixInterval() > 0)
+    {
         // Schedule the alternative fix event
         timer.every(params.getAlternativeFixInterval() * 60, runAlternativeFixEvent);
     }
 
-    if (isOnTheMoveInitialized) {
+    if (isOnTheMoveInitialized)
+    {
         timer.every(params.getOnTheMoveFixInterval() * 60, runOnTheMoveFixEvent);
     }
 
 #ifdef ARDUINO_SODAQ_ONE
     // if lora is not enabled, schedule an event that takes care of extending the sleep time of the module
-    if (!LoRa.isInitialized()) {
+    if (!LoRa.isInitialized())
+    {
         timer.every(24 * 60 * 60, runLoraModuleSleepExtendEvent); // once a day
     }
 #endif
@@ -799,10 +841,7 @@ bool isAlternativeFixEventApplicable()
     // - alternative fix interval should be set
     // - the span between FROM and TO should be at least as much as the alternative fix interval
     // - current time should be within the FROM and TO times set
-    return (isRtcInitialized
-        && (params.getAlternativeFixInterval() > 0)
-        && (params.getAlternativeFixTo() - params.getAlternativeFixFrom() >= params.getAlternativeFixInterval() * 60)
-        && (isCurrentTimeOfDayWithin(params.getAlternativeFixFrom(), params.getAlternativeFixTo())));
+    return (isRtcInitialized && (params.getAlternativeFixInterval() > 0) && (params.getAlternativeFixTo() - params.getAlternativeFixFrom() >= params.getAlternativeFixInterval() * 60) && (isCurrentTimeOfDayWithin(params.getAlternativeFixFrom(), params.getAlternativeFixTo())));
 }
 
 /**
@@ -820,7 +859,8 @@ bool isCurrentTimeOfDayWithin(uint32_t daySecondsFrom, uint32_t daySecondsTo)
  */
 void runDefaultFixEvent(uint32_t now)
 {
-    if (!isAlternativeFixEventApplicable()) {
+    if (!isAlternativeFixEventApplicable())
+    {
         debugPrintln("Default fix event started.");
         getGpsFixAndTransmit();
     }
@@ -831,7 +871,8 @@ void runDefaultFixEvent(uint32_t now)
  */
 void runAlternativeFixEvent(uint32_t now)
 {
-    if (isAlternativeFixEventApplicable()) {
+    if (isAlternativeFixEventApplicable())
+    {
         debugPrintln("Alternative fix event started.");
         getGpsFixAndTransmit();
     }
@@ -842,13 +883,16 @@ void runAlternativeFixEvent(uint32_t now)
 */
 void runOnTheMoveFixEvent(uint32_t now)
 {
-    if (isOnTheMoveActivated) {
+    if (isOnTheMoveActivated)
+    {
         debugPrintln("runOnTheMoveFixEvent0 - isOnTheMoveActivated");
-        if (now - lastOnTheMoveActivationTimestamp < params.getOnTheMoveTimeout() * 60) {
+        if (now - lastOnTheMoveActivationTimestamp < params.getOnTheMoveTimeout() * 60)
+        {
             debugPrintln("On-the-move fix event started.");
             getGpsFixAndTransmit();
         }
-        else {
+        else
+        {
             // timeout elapsed -disable it completely until there is another on-the-move interrupt triggered
             debugPrintln("On-the-move has timed-out (no movement) -disabling.");
             isOnTheMoveActivated = false;
@@ -869,11 +913,12 @@ void runLoraModuleSleepExtendEvent(uint32_t now)
 /**
  *  Checks validity of data, adds valid points to the points list, syncs the RTC
  */
-void delegateNavPvt(NavigationPositionVelocityTimeSolution* NavPvt)
+void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt)
 {
     sodaq_wdt_reset();
 
-    if (!isGpsInitialized) {
+    if (!isGpsInitialized)
+    {
         debugPrintln("delegateNavPvt exiting because GPS is not initialized.");
 
         return;
@@ -884,37 +929,41 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution* NavPvt)
     navPvtCounter++;
 
     // print the counter value every 10s
-    if ((navPvtCounter % 10) == 0) {
+    if ((navPvtCounter % 10) == 0)
+    {
         debugPrint(navPvtCounter);
         debugPrint("s");
     }
 
     // newline every 30s
-    if ((navPvtCounter % 30) == 0) {
+    if ((navPvtCounter % 30) == 0)
+    {
         debugPrintln();
     }
 
-
     // note: db_printf gets enabled/disabled according to the "DEBUG" define (ublox.cpp)
     ublox.db_printf("%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%d valid=%2.2x lat=%d lon=%d sats=%d fixType=%2.2x flags=%2.2x hAcc=%u vAcc=%u\r\n",
-        NavPvt->year, NavPvt->month, NavPvt->day,
-        NavPvt->hour, NavPvt->minute, NavPvt->seconds, NavPvt->nano, NavPvt->valid,
-        NavPvt->lat, NavPvt->lon, NavPvt->numSV, NavPvt->fixType, NavPvt->flags, NavPvt->hAcc, NavPvt->vAcc);
+                    NavPvt->year, NavPvt->month, NavPvt->day,
+                    NavPvt->hour, NavPvt->minute, NavPvt->seconds, NavPvt->nano, NavPvt->valid,
+                    NavPvt->lat, NavPvt->lon, NavPvt->numSV, NavPvt->fixType, NavPvt->flags, NavPvt->hAcc, NavPvt->vAcc);
 
     // sync the RTC time
-    if ((NavPvt->valid & GPS_TIME_VALIDITY) == GPS_TIME_VALIDITY) {
+    if ((NavPvt->valid & GPS_TIME_VALIDITY) == GPS_TIME_VALIDITY)
+    {
         uint32_t epoch = time.mktime(NavPvt->year, NavPvt->month, NavPvt->day, NavPvt->hour, NavPvt->minute, NavPvt->seconds);
 
         // check if there is an actual offset before setting the RTC
-        if (abs((int64_t)getNow() - (int64_t)epoch) > MAX_RTC_EPOCH_OFFSET) {
+        if (abs((int64_t)getNow() - (int64_t)epoch) > MAX_RTC_EPOCH_OFFSET)
+        {
             setNow(epoch);
         }
     }
 
     // check that the fix is OK and that it is a 3d fix or GNSS + dead reckoning combined
-    if (((NavPvt->flags & GPS_FIX_FLAGS) == GPS_FIX_FLAGS) && ((NavPvt->fixType == 3) || (NavPvt->fixType == 4))) {
+    if (((NavPvt->flags & GPS_FIX_FLAGS) == GPS_FIX_FLAGS) && ((NavPvt->fixType == 3) || (NavPvt->fixType == 4)))
+    {
         pendingReportDataRecord.setCourse((constrain(NavPvt->heading, 0, INT32_MAX) * 255) / (360 * 100000)); // scale and range to 0..255
-        pendingReportDataRecord.setAltitude((int16_t)constrain(NavPvt->hMSL / 1000, INT16_MIN, INT16_MAX)); // mm to m
+        pendingReportDataRecord.setAltitude((int16_t)constrain(NavPvt->hMSL / 1000, INT16_MIN, INT16_MAX));   // mm to m
         pendingReportDataRecord.setLat(NavPvt->lat);
         pendingReportDataRecord.setLong(NavPvt->lon);
         pendingReportDataRecord.setSatelliteCount(NavPvt->numSV);
@@ -938,7 +987,8 @@ bool getGpsFixAndTransmit()
 {
     debugPrintln("Starting getGpsFixAndTransmit()...");
 
-    if (!isGpsInitialized) {
+    if (!isGpsInitialized)
+    {
         debugPrintln("GPS is not initialized, exiting...");
 
         return false;
@@ -947,7 +997,7 @@ bool getGpsFixAndTransmit()
     bool isSuccessful = false;
     setGpsActive(true);
 
-#if defined(ARDUINO_SODAQ_SFF) || defined (ARDUINO_SODAQ_SARA)
+#if defined(ARDUINO_SODAQ_SFF) || defined(ARDUINO_SODAQ_SARA)
     // save time by turning on the GPS module and connect to network in the same time.
     network.setActive(true);
 #endif
@@ -955,13 +1005,13 @@ bool getGpsFixAndTransmit()
     navPvtCounter = 0;
     pendingReportDataRecord.setSatelliteCount(0); // reset satellites to use them as a quality metric in the loop
     uint32_t startTime = getNow();
-    while ((getNow() - startTime <= params.getGpsFixTimeout())
-        && (pendingReportDataRecord.getSatelliteCount() < params.getGpsMinSatelliteCount()))
+    while ((getNow() - startTime <= params.getGpsFixTimeout()) && (pendingReportDataRecord.getSatelliteCount() < params.getGpsMinSatelliteCount()))
     {
         sodaq_wdt_reset();
         uint16_t bytes = ublox.available();
 
-        if (bytes) {
+        if (bytes)
+        {
             rtcEpochDelta = 0;
             isPendingReportDataRecordNew = false;
             ublox.GetPeriodic(bytes); // calls the delegate method for passing results
@@ -970,7 +1020,8 @@ bool getGpsFixAndTransmit()
 
             // isPendingReportDataRecordNew guarantees at least a 3d fix or GNSS + dead reckoning combined
             // and is good enough to keep, but the while loop should keep trying until timeout or sat count larger than set
-            if (isPendingReportDataRecordNew) {
+            if (isPendingReportDataRecordNew)
+            {
                 isSuccessful = true;
             }
         }
@@ -985,7 +1036,8 @@ bool getGpsFixAndTransmit()
 
     GpsFixDataRecord record;
     record.init();
-    if (isSuccessful) {
+    if (isSuccessful)
+    {
         pendingReportDataRecord.setTimeToFix(pendingReportDataRecord.getTimestamp() - startTime);
 
         // add the new gpsFixDataRecord to the ringBuffer
@@ -995,7 +1047,8 @@ bool getGpsFixAndTransmit()
 
         gpsFixLiFoRingBuffer_push(&record);
     }
-    else {
+    else
+    {
         pendingReportDataRecord.setTimeToFix(0xFF);
 
         // no need to check the buffer or the record for validity, default for Lat/Long is 0 anyway
@@ -1004,7 +1057,8 @@ bool getGpsFixAndTransmit()
         pendingReportDataRecord.setLong(record.getLong());
     }
 
-    if (params.getIsDebugOn()) {
+    if (params.getIsDebugOn())
+    {
         pendingReportDataRecord.printHeaderLn(&DEBUG_STREAM);
         pendingReportDataRecord.printRecordLn(&DEBUG_STREAM);
         debugPrintln();
@@ -1022,7 +1076,8 @@ void setGpsActive(bool on)
 {
     sodaq_wdt_reset();
 
-    if (on) {
+    if (on)
+    {
         digitalWrite(GPS_ENABLE, HIGH);
 
         ublox.enable();
@@ -1038,11 +1093,13 @@ void setGpsActive(bool on)
         int8_t retriesLeft;
 
         retriesLeft = maxRetries;
-        while (!ublox.getPortConfigurationDDC(&pcd) && (retriesLeft-- > 0)) {
+        while (!ublox.getPortConfigurationDDC(&pcd) && (retriesLeft-- > 0))
+        {
             debugPrintln("Retrying ublox.getPortConfigurationDDC(&pcd)...");
             sodaq_wdt_safe_delay(15);
         }
-        if (retriesLeft == -1) {
+        if (retriesLeft == -1)
+        {
             debugPrintln("ublox.getPortConfigurationDDC(&pcd) failed!");
 
             return;
@@ -1050,23 +1107,14 @@ void setGpsActive(bool on)
 
         pcd.outProtoMask = 1; // Disable NMEA
         retriesLeft = maxRetries;
-        while (!ublox.setPortConfigurationDDC(&pcd) && (retriesLeft-- > 0)) {
+        while (!ublox.setPortConfigurationDDC(&pcd) && (retriesLeft-- > 0))
+        {
             debugPrintln("Retrying ublox.setPortConfigurationDDC(&pcd)...");
             sodaq_wdt_safe_delay(15);
         }
-        if (retriesLeft == -1) {
+        if (retriesLeft == -1)
+        {
             debugPrintln("ublox.setPortConfigurationDDC(&pcd) failed!");
-
-            return;
-        }
-
-        retriesLeft = maxRetries;
-        while (!ublox.getNavParameters(&nav) && (retriesLeft-- > 0)) {
-            debugPrintln("Retrying ublox.getNavParameters(&nav)...");
-            sodaq_wdt_safe_delay(15);
-        }
-        if (retriesLeft == -1) {
-            debugPrintln("ublox.getNavParameters(&nav) failed!");
 
             return;
         }
@@ -1076,30 +1124,46 @@ void setGpsActive(bool on)
         debugPrintln(nav.pAcc);
         debugPrintln(nav.cnoThresh);
         debugPrintln(nav.cnoThreshNumSVs);
-        // nav.mask = 1;
-        // nav.dynModel = 3;
-        nav.mask = 16; // only set pAcc
-        nav.pAcc = 10;
-        // nav.cnoThreshNumSVs = 6;
+        if (params.getGpsPositionAccuracy() != 0)
+        {
+            nav.mask = 16; // only set pAcc
+            nav.pAcc = params.getGpsPositionAccuracy();
+
+            retriesLeft = maxRetries;
+            while (!ublox.getNavParameters(&nav) && (retriesLeft-- > 0))
+            {
+                debugPrintln("Retrying ublox.getNavParameters(&nav)...");
+                sodaq_wdt_safe_delay(15);
+            }
+            if (retriesLeft == -1)
+            {
+                debugPrintln("ublox.getNavParameters(&nav) failed!");
+
+                return;
+            }
+
+            retriesLeft = maxRetries;
+            while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0))
+            {
+                debugPrintln("Retrying ublox.setNavParameters(&nav)...");
+                sodaq_wdt_safe_delay(15);
+            }
+            if (retriesLeft == -1)
+            {
+                debugPrintln("ublox.setNavParameters(&nav) failed!");
+
+                return;
+            }
+        }
 
         retriesLeft = maxRetries;
-        while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0)) {
-            debugPrintln("Retrying ublox.setNavParameters(&nav)...");
-            sodaq_wdt_safe_delay(15);
-        }
-        if (retriesLeft == -1) {
-            debugPrintln("ublox.setNavParameters(&nav) failed!");
-
-            return;
-        }
-
-        
-        retriesLeft = maxRetries;
-        while (!ublox.getNavParameters(&nav2) && (retriesLeft-- > 0)) {
+        while (!ublox.getNavParameters(&nav2) && (retriesLeft-- > 0))
+        {
             debugPrintln("Retrying ublox.getNavParameters(&nav)...");
             sodaq_wdt_safe_delay(15);
         }
-        if (retriesLeft == -1) {
+        if (retriesLeft == -1)
+        {
             debugPrintln("ublox.getNavParameters(&nav) failed!");
 
             return;
@@ -1110,12 +1174,12 @@ void setGpsActive(bool on)
         debugPrintln(nav2.pAcc);
         debugPrintln(nav2.cnoThresh);
         debugPrintln(nav2.cnoThreshNumSVs);
-        
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;
     }
-    else {
+    else
+    {
         ublox.disable();
         digitalWrite(GPS_ENABLE, LOW);
     }
@@ -1128,15 +1192,18 @@ void setGpsActive(bool on)
 void setAccelerometerTempSensorActive(bool on)
 {
     // if on-the-move is initialized then the accelerometer is enabled anyway
-    if (isOnTheMoveInitialized) {
+    if (isOnTheMoveInitialized)
+    {
         return;
     }
 
-    if (on) {
+    if (on)
+    {
         accelerometer.enableAccelerometer(Sodaq_LSM303AGR::LowPowerMode, Sodaq_LSM303AGR::HrNormalLowPower100Hz, Sodaq_LSM303AGR::XYZ, Sodaq_LSM303AGR::Scale2g, true);
         sodaq_wdt_safe_delay(30); // should be enough for initilization and 2 measurement periods
     }
-    else {
+    else
+    {
         accelerometer.disableAccelerometer();
     }
 }
@@ -1146,33 +1213,39 @@ void setAccelerometerTempSensorActive(bool on)
  *
  * It uses the PM->RCAUSE register to detect the cause of the last reset.
  */
-static void printCpuResetCause(Stream& stream)
+static void printCpuResetCause(Stream &stream)
 {
     stream.print("CPU reset by");
 
-    if (PM->RCAUSE.bit.SYST) {
+    if (PM->RCAUSE.bit.SYST)
+    {
         stream.print(" Software");
     }
 
     // Syntax error due to #define WDT in CMSIS/4.0.0-atmel/Device/ATMEL/samd21/include/samd21j18a.h
     // if (PM->RCAUSE.bit.WDT) {
-    if ((PM->RCAUSE.reg & PM_RCAUSE_WDT) != 0) {
+    if ((PM->RCAUSE.reg & PM_RCAUSE_WDT) != 0)
+    {
         stream.print(" Watchdog");
     }
 
-    if (PM->RCAUSE.bit.EXT) {
+    if (PM->RCAUSE.bit.EXT)
+    {
         stream.print(" External");
     }
 
-    if (PM->RCAUSE.bit.BOD33) {
+    if (PM->RCAUSE.bit.BOD33)
+    {
         stream.print(" BOD33");
     }
 
-    if (PM->RCAUSE.bit.BOD12) {
+    if (PM->RCAUSE.bit.BOD12)
+    {
         stream.print(" BOD12");
     }
 
-    if (PM->RCAUSE.bit.POR) {
+    if (PM->RCAUSE.bit.POR)
+    {
         stream.print(" Power On Reset");
     }
 
@@ -1185,14 +1258,15 @@ static void printCpuResetCause(Stream& stream)
  * Prints a boot-up message that includes project name, version,
  * and Cpu reset cause.
  */
-static void printBootUpMessage(Stream& stream)
+static void printBootUpMessage(Stream &stream)
 {
     stream.println("** " PROJECT_NAME " - " VERSION " **");
 
 #ifdef ARDUINO_SODAQ_ONE
-    uint8_t* loraHWEui = network.getLoraNetwork().getHWEUI(MODEM_STREAM, updateConfigOverTheAir, getNow);
+    uint8_t *loraHWEui = network.getLoraNetwork().getHWEUI(MODEM_STREAM, updateConfigOverTheAir, getNow);
     stream.print("LoRa HWEUI: ");
-    for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t i = 0; i < 8; i++)
+    {
         stream.print((char)NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(loraHWEui[i])));
         stream.print((char)NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(loraHWEui[i])));
     }
@@ -1294,7 +1368,6 @@ void onConfigReset(void)
 #ifdef DEBUG
     params._isDebugOn = true;
 #endif
-
 }
 
 void resetLora()

@@ -129,6 +129,7 @@ void ConfigParams::reset()
     _spreadingFactor = 12;
     _powerIndex = 1;
     _gpsMinSatelliteCount = 6;
+    _gpsPosAccuracy = 0; // Default to 0 as it would indicate that we use the default fix accuracy.
 
     _isLedEnabled = 0;
     _isDebugOn = 1;
@@ -170,6 +171,7 @@ static const Command args[] = {
     { "Alt. Fix To (HH)          ", "afth=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToHours },
     { "Alt. Fix To (MM)          ", "aftm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToMinutes },
     { "GPS Fix Timeout (sec)     ", "gft=", Command::set_uint8, Command::show_uint8, &params._gpsFixTimeout },
+    { "GPS Postition Accuracy (m)", "gpa=", Command::set_uint16, Command::show_uint16, &params._gpsPosAccuracy },
     { "Minimum sat count         ", "sat=", Command::set_uint8, Command::show_uint8, &params._gpsMinSatelliteCount },
     { "Num Coords to Upload      ", "num=", Command::set_uint8, Command::show_uint8, &params._coordinateUploadCount },
     { "On-the-move Functionality ", 0,      0,                  Command::show_title, 0 },
@@ -317,6 +319,10 @@ bool ConfigParams::checkConfig(Stream& stream)
     if (_networkType == 0) {
         stream.println("Network type should be set");
         fail = true;
+    }
+
+    if (_gpsPosAccuracy < 3 && _gpsPosAccuracy != 0) {
+        stream.println("GPS Postition Accuracy must be 0 (for default) or above 3");
     }
 
     return !fail;
