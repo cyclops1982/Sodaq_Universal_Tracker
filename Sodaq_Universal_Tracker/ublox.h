@@ -110,6 +110,8 @@ typedef struct __attribute__((packed,aligned(1))) TimePulseParameters {
 
 } TimePulseParameters;
 
+
+// Not used
 typedef struct __attribute__((packed,aligned(1))) TimePulseTimedata {
     uint32_t    towMS;          // ms Time pulse time of week according to time base
     uint32_t    towSubMS;       // ms Submillisecond part of TOWMS
