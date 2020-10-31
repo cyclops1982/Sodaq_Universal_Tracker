@@ -72,11 +72,6 @@ typedef struct __attribute__((packed,aligned(1))) PortConfigurationDDC {
 } PortConfigurationDDC;
 
 
-typedef struct __attribute__((packed, aligned(1))) MonVersion {
-    char swVersion[30];
-    char hwVersion[10];
-} MonVersion;
-
 // Defined in 32.10.19
 typedef struct __attribute__((packed, aligned(1))) NavigationEngineSetting {
     uint16_t    mask;
