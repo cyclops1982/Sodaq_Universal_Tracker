@@ -1098,11 +1098,17 @@ void setGpsActive(bool on)
             return;
         }
 
+        debugPrintln(nav.mask);
         debugPrintln(nav.dynModel);
         debugPrintln(nav.pAcc);
-        nav.mask = 4;
-        nav.dynModel = 3;
+        debugPrintln(nav.cnoThresh);
+        debugPrintln(nav.cnoThreshNumSVs);
+        // nav.mask = 1;
+        // nav.dynModel = 3;
+        nav.mask = 16; // only set pAcc
         nav.pAcc = 10;
+        // nav.cnoThreshNumSVs = 6;
+
         retriesLeft = maxRetries;
         while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0)) {
             debugPrintln("Retrying ublox.setNavParameters(&nav)...");
@@ -1126,10 +1132,30 @@ void setGpsActive(bool on)
             return;
         }
 
+        debugPrintln(nav2.mask);
         debugPrintln(nav2.dynModel);
         debugPrintln(nav2.pAcc);
+        debugPrintln(nav2.cnoThresh);
+        debugPrintln(nav2.cnoThreshNumSVs);
+        
+        // MonVersion ver;
+
+        // retriesLeft = maxRetries;
+        // while (!ublox.getVersion(&ver) && (retriesLeft-- > 0)) {
+        //     debugPrintln("Retrying ublox.getVersion(&pcd)...");
+        //     sodaq_wdt_safe_delay(15);
+        // }
+        // if (retriesLeft == -1) {
+        //     debugPrintln("ublox.getVersion(&pcd) failed!");
+
+        //     return;
+
+        // }
 
 
+
+        // debugPrintln(ver.hwVersion);
+        // debugPrintln(ver.swVersion);
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;
