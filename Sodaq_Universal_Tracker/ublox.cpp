@@ -351,7 +351,7 @@ bool UBlox::setNavParameters(NavigationEngineSetting *nav) {
     buffer[1] = 0x24;
     buffer[2] = 36; // message is 36 bytes long
     buffer[3] = 0;
-    memcpy(&payLoad_.buffer[4], (uint8_t *)nav, 36);
+    memcpy(&buffer[4], (uint8_t *)nav, 36);
     // Push message on Wire
     (void)this->send(buffer, 40);
     return this->wait();
@@ -370,6 +370,15 @@ int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
     // Push message on Wire
     (void)this->send(payLoad_.buffer, 36);
     return this->wait();
+}
+
+bool UBlox::getVersion(MonVersion *mon) {
+    uint8_t buffer[3];
+    buffer[0] = 0x0A;
+    buffer[1] = 0x04;
+    buffer[2] = 0;
+    (void)this->send(buffer, 3);
+    return this->wait(0x0A04, sizeof(MonVersion), mon);
 }
 
 bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)

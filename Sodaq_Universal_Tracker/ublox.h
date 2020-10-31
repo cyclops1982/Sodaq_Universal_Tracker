@@ -19,6 +19,10 @@
 
 #include <Wire.h>
 
+// The below structs are defined in. https://www.u-blox.com/en/docs/UBX-13003221
+
+
+// Defined in 32.17.17
 typedef struct __attribute__((packed,aligned(1))) NavigationPositionVelocityTimeSolution {
     uint32_t    iTOW;       // 00 GPS time of week of the navigation epoch.
     uint16_t    year;       // 04 Year UTC
@@ -54,19 +58,26 @@ typedef struct __attribute__((packed,aligned(1))) NavigationPositionVelocityTime
 } NavigationPositionVelocityTimeSolution;
 
 
+// section 32.10.25.5 (I2C port)
 typedef struct __attribute__((packed,aligned(1))) PortConfigurationDDC {
     uint8_t     portID;
-    uint8_t     reserved0;
+    uint8_t     reserved1;
     uint16_t    txReady;
     uint32_t    mode;
-    uint32_t    reserved3;
+    uint32_t    reserved2;
     uint16_t    inProtoMask;
     uint16_t    outProtoMask;
     uint16_t    flags;
-    uint16_t    reserved5;
+    uint16_t    reserved3;
 } PortConfigurationDDC;
 
 
+typedef struct __attribute__((packed, aligned(1))) MonVersion {
+    char swVersion[30];
+    char hwVersion[10];
+} MonVersion;
+
+// Defined in 32.10.19
 typedef struct __attribute__((packed, aligned(1))) NavigationEngineSetting {
     uint16_t    mask;
     uint8_t     dynModel;
@@ -158,6 +169,8 @@ public:
 
     bool    getNavParameters(NavigationEngineSetting *nav);
     bool    setNavParameters(NavigationEngineSetting *nav);
+
+    bool    getVersion(MonVersion *mon);
 
     void    GetPeriodic();
     void    GetPeriodic(int bytes);
