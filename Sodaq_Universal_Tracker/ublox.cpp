@@ -372,14 +372,7 @@ int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
     return this->wait();
 }
 
-bool UBlox::getVersion(MonVersion *mon) {
-    uint8_t buffer[3];
-    buffer[0] = 0x0A;
-    buffer[1] = 0x04;
-    buffer[2] = 0;
-    (void)this->send(buffer, 3);
-    return this->wait(0x0A04, sizeof(MonVersion), mon);
-}
+
 
 bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)
 {

@@ -1138,24 +1138,6 @@ void setGpsActive(bool on)
         debugPrintln(nav2.cnoThresh);
         debugPrintln(nav2.cnoThreshNumSVs);
         
-        // MonVersion ver;
-
-        // retriesLeft = maxRetries;
-        // while (!ublox.getVersion(&ver) && (retriesLeft-- > 0)) {
-        //     debugPrintln("Retrying ublox.getVersion(&pcd)...");
-        //     sodaq_wdt_safe_delay(15);
-        // }
-        // if (retriesLeft == -1) {
-        //     debugPrintln("ublox.getVersion(&pcd) failed!");
-
-        //     return;
-
-        // }
-
-
-
-        // debugPrintln(ver.hwVersion);
-        // debugPrintln(ver.swVersion);
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;
