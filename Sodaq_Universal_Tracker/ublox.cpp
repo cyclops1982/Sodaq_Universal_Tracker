@@ -226,8 +226,9 @@ int UBlox::available()
 void UBlox::GetPeriodic()
 {
     int bytes = this->available();
-    if (bytes)
+    if (bytes) {
         return this->GetPeriodic(bytes);
+    }
 }
 
 void UBlox::dispatchMessage(int id)
@@ -291,32 +292,35 @@ void UBlox::GetPeriodic(int bytes)
     }
 }
 
+// Sends out a UBX message, first byte is the class
+//TODO: check if we can use 'sizeof(buffer)' instead of the second parameter?
 int UBlox::send(uint8_t *buffer, int n)
 {
-    uint8_t ck_a, ck_b;
-    ck_a = ck_b = 0;
-    //
+    // Calculate checksum for UBX messages explained in 32.4
+    // Checksum is only calculated on the message, starting from the class
+    uint8_t ck_a = 0;
+    uint8_t ck_b = 0;
     for (int i = 0; i < n; i++)
     {
         ck_a += buffer[i];
         ck_b += ck_a;
     }
-    //
+
     Wire_.beginTransmission(address_);
-    Wire_.write(0xb5); // Header
-    Wire_.write(0x62);
+    Wire_.write(0xb5); // Header byte 1
+    Wire_.write(0x62); // Header byte 2
     Wire_.write(buffer, n);
     Wire_.write(ck_a);
     Wire_.write(ck_b);
     return Wire_.endTransmission();
 }
 
-void UBlox::sendraw()
-{
-    (void)this->send(payLoad_.buffer, payLoad_.length);
-    int id = this->wait();
-    this->db_printf("UBlox::sendraw() == %4.4x\n", id);
-}
+// void UBlox::sendraw()
+// {
+//     (void)this->send(payLoad_.buffer, payLoad_.length);
+//     int id = this->wait();
+//     this->db_printf("UBlox::sendraw() == %4.4x\n", id);
+// }
 
 void UBlox::CfgMsg(uint16_t Msg, uint8_t rate)
 {
@@ -363,14 +367,14 @@ bool UBlox::setNavParameters(NavigationEngineSetting *nav) {
 // 32.10.38.3
 int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
 {
-    // Warning this overwrites the receive buffer !!!
-    payLoad_.buffer[0] = 0x06; // class 
-    payLoad_.buffer[1] = 0x31; // id 
-    payLoad_.buffer[2] = 32;   // length - first byte
-    payLoad_.buffer[3] = 0;    // length - second Byte
-    memcpy(&payLoad_.buffer[4], (uint8_t *)Tpp, 32);
+    uint8_t buffer[36];
+    buffer[0] = 0x06; // class 
+    buffer[1] = 0x31; // id 
+    buffer[2] = 32;   // length - first byte
+    buffer[3] = 0;    // length - second Byte
+    memcpy(&buffer[4], (uint8_t *)Tpp, 32);
     // Push message on Wire
-    (void)this->send(payLoad_.buffer, 36);
+    (void)this->send(buffer, 36);
     return this->wait();
 }
 
@@ -379,7 +383,6 @@ int UBlox::setTimePulseParameters(TimePulseParameters *Tpp)
 bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)
 {
     uint8_t buffer[5];
-    //
     buffer[0] = 0x06;
     buffer[1] = 0x31;
     buffer[2] = 1;
@@ -394,14 +397,15 @@ bool UBlox::getTimePulseParameters(uint8_t tpIdx, TimePulseParameters *tpp)
 // 32.10.25.2
 int UBlox::setPortConfigurationDDC(PortConfigurationDDC *pcd)
 {
+    uint8_t buffer[24];
     // Warning this overwrites the receive buffer !!!
-    payLoad_.buffer[0] = 0x06;
-    payLoad_.buffer[1] = 0x00;
-    payLoad_.buffer[2] = 20;
-    payLoad_.buffer[3] = 0;
-    memcpy(&payLoad_.buffer[4], (uint8_t *)pcd, 20);
+    buffer[0] = 0x06;
+    buffer[1] = 0x00;
+    buffer[2] = 20;
+    buffer[3] = 0;
+    memcpy(&buffer[4], (uint8_t *)pcd, 20);
     // Push message on Wire
-    (void)this->send(payLoad_.buffer, 24);
+    (void)this->send(buffer, 24);
     return this->wait();
 }
 
@@ -409,7 +413,6 @@ int UBlox::setPortConfigurationDDC(PortConfigurationDDC *pcd)
 bool UBlox::getPortConfigurationDDC(PortConfigurationDDC *pcd)
 {
     uint8_t buffer[4];
-    //
     buffer[0] = 0x06;
     buffer[1] = 0x00;
     buffer[2] = 0;
@@ -454,8 +457,11 @@ bool UBlox::wait(uint16_t rid, int reqLength, void *d)
     uint16_t bytes;
     bool found = false;
     // Wait 50 ms for response
-    while ((elapsed = millis() - s) < 50 && (bytes = this->available()) == 0)
-        ;
+    while ((elapsed = millis() - s) < 50 && (bytes = this->available()) == 0) {
+        // Nothing
+        // TODO: shouldn't we do a real wait instead of a loop?
+    }
+
     if (bytes)
     {
         do

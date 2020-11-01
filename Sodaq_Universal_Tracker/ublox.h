@@ -150,9 +150,6 @@ enum Messages {
 class UBlox {
 
 public:
-    // NavigationPositionVelocityTimeSolution *NavPvt;
-    // TimePulseParameters *CfgTp;
-    //
     UBlox   ();
     UBlox   (TwoWire& Wire,uint8_t address);
     void    CfgMsg(uint16_t Msg,uint8_t rate);
@@ -166,8 +163,6 @@ public:
 
     bool    getNavParameters(NavigationEngineSetting *nav);
     bool    setNavParameters(NavigationEngineSetting *nav);
-
-    bool    getVersion(MonVersion *mon);
 
     void    GetPeriodic();
     void    GetPeriodic(int bytes);
@@ -185,7 +180,7 @@ public:
     void    print_buffer();
     //
     int     process(uint8_t);
-    void    sendraw();
+    //void    sendraw();
 private:
     int     send(uint8_t *buffer,int n);
     int     wait();
