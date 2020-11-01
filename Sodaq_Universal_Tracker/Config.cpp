@@ -128,7 +128,7 @@ void ConfigParams::reset()
     _isAckOn = 0;
     _spreadingFactor = 12;
     _powerIndex = 1;
-    _gpsMinSatelliteCount = 4;
+    _gpsMinSatelliteCount = 3;
     _gpsPosAccuracy = 0; // Default to 0 as it would indicate that we use the default fix accuracy.
 
     _isLedEnabled = 0;
