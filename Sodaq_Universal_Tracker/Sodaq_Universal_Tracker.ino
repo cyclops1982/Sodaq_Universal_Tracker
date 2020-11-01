@@ -198,6 +198,7 @@ void onConfigReset(void);
 void setupBOD33();
 bool initUdpHeader();
 
+
 static void printCpuResetCause(Stream &stream);
 static void printBootUpMessage(Stream &stream);
 
@@ -1086,12 +1087,13 @@ void setGpsActive(bool on)
         sodaq_wdt_safe_delay(100);
 
         PortConfigurationDDC pcd;
-        NavigationEngineSetting nav;
+
         NavigationEngineSetting nav2;
 
         uint8_t maxRetries = 6;
         int8_t retriesLeft;
 
+        //TODO: figure out why we're doing this retry mechanism. Is there something where the ublox could not respond?
         retriesLeft = maxRetries;
         while (!ublox.getPortConfigurationDDC(&pcd) && (retriesLeft-- > 0))
         {
@@ -1101,7 +1103,6 @@ void setGpsActive(bool on)
         if (retriesLeft == -1)
         {
             debugPrintln("ublox.getPortConfigurationDDC(&pcd) failed!");
-
             return;
         }
 
@@ -1115,20 +1116,12 @@ void setGpsActive(bool on)
         if (retriesLeft == -1)
         {
             debugPrintln("ublox.setPortConfigurationDDC(&pcd) failed!");
-
             return;
         }
 
-        debugPrintln(nav.mask);
-        debugPrintln(nav.dynModel);
-        debugPrintln(nav.pAcc);
-        debugPrintln(nav.cnoThresh);
-        debugPrintln(nav.cnoThreshNumSVs);
         if (params.getGpsPositionAccuracy() != 0)
         {
-            nav.mask = 16; // only set pAcc
-            nav.pAcc = params.getGpsPositionAccuracy();
-
+            NavigationEngineSetting nav;
             retriesLeft = maxRetries;
             while (!ublox.getNavParameters(&nav) && (retriesLeft-- > 0))
             {
@@ -1138,9 +1131,11 @@ void setGpsActive(bool on)
             if (retriesLeft == -1)
             {
                 debugPrintln("ublox.getNavParameters(&nav) failed!");
-
                 return;
             }
+
+            nav.mask = 16; // only set pAcc
+            nav.pAcc = params.getGpsPositionAccuracy();
 
             retriesLeft = maxRetries;
             while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0))
@@ -1151,7 +1146,6 @@ void setGpsActive(bool on)
             if (retriesLeft == -1)
             {
                 debugPrintln("ublox.setNavParameters(&nav) failed!");
-
                 return;
             }
         }
@@ -1165,15 +1159,11 @@ void setGpsActive(bool on)
         if (retriesLeft == -1)
         {
             debugPrintln("ublox.getNavParameters(&nav) failed!");
-
             return;
         }
 
-        debugPrintln(nav2.mask);
-        debugPrintln(nav2.dynModel);
-        debugPrintln(nav2.pAcc);
-        debugPrintln(nav2.cnoThresh);
-        debugPrintln(nav2.cnoThreshNumSVs);
+        ublox.printUBX_CFG_NAV5(nav2);
+
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;
@@ -1184,6 +1174,8 @@ void setGpsActive(bool on)
         digitalWrite(GPS_ENABLE, LOW);
     }
 }
+
+
 
 /**
  * Initializes the accelerometer or puts it in power-down mode
