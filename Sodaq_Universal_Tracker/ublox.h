@@ -178,6 +178,7 @@ public:
     // Debug helper
     void    db_printf(const char *message,...);
     void    print_buffer();
+    void    printUBX_CFG_NAV5(NavigationEngineSetting nav);
     //
     int     process(uint8_t);
     //void    sendraw();

@@ -47,6 +47,19 @@ void UBlox::print_buffer()
     SerialUSB.println();
 }
 
+
+void UBlox::printUBX_CFG_NAV5(NavigationEngineSetting nav) {
+    SerialUSB.println("UBX-CFG-NAV5: dynModel, fixMode, fixedAlt, fixedAltVar, minElev, drLimit, pDop, tDop, pAcc, tAcc, staticHoldThresh, dgnssTimeout, cnoTreshNumSVs, cnoThresh, staticHoldMaxDist, utcStandard");
+    char tmp[255];
+    snprintf(tmp, sizeof(tmp), "UBX-CFG-NAV5: %u, %u, %d, %u, %d, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u", 
+    nav.dynModel, 
+    nav.fixMode, nav.fixedAlt, nav.fixedAltVar,
+    nav.minElev, nav.drLimit, nav.pDop, nav.tDop,
+    nav.pAcc, nav.tAcc, nav.staticHoldThresh, nav.dgnssTimeout, nav.cnoThreshNumSVs, nav.cnoThresh, nav.staticHoldMaxDist, nav.utcStandard);
+    SerialUSB.println(tmp);
+}
+
+
 UBlox::UBlox() : Wire_(Wire)
 {
     address_ = 0x42;
