@@ -51,7 +51,7 @@ void UBlox::print_buffer()
 void UBlox::printUBX_CFG_NAV5(NavigationEngineSetting nav) {
     SerialUSB.println("UBX-CFG-NAV5: dynModel, fixMode, fixedAlt, fixedAltVar, minElev, drLimit, pDop, tDop, pAcc, tAcc, staticHoldThresh, dgnssTimeout, cnoTreshNumSVs, cnoThresh, staticHoldMaxDist, utcStandard");
     char tmp[255];
-    snprintf(tmp, sizeof(tmp), "UBX-CFG-NAV5: %u, %u, %d, %u, %d, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u", 
+    snprintf(tmp, sizeof(tmp), "UBX-CFG-NAV5: %8u, %7u, %8d, %11u, %7d, %7u, %4u, %4u, %4u, %4u, %16u, %12u, %14u, %9u, %17u, %11u", 
     nav.dynModel, 
     nav.fixMode, nav.fixedAlt, nav.fixedAltVar,
     nav.minElev, nav.drLimit, nav.pDop, nav.tDop,
