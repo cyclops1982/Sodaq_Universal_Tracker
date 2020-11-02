@@ -1119,9 +1119,10 @@ void setGpsActive(bool on)
             return;
         }
 
-        if (params.getGpsPositionAccuracy() != 0)
-        {
+
+        if (params.getGpsPositionAccuracy() != 0 || params.getGpsDynamicModel() != 0) {
             NavigationEngineSetting nav;
+
             retriesLeft = maxRetries;
             while (!ublox.getNavParameters(&nav) && (retriesLeft-- > 0))
             {
@@ -1134,8 +1135,18 @@ void setGpsActive(bool on)
                 return;
             }
 
-            nav.mask = 16; // only set pAcc
-            nav.pAcc = params.getGpsPositionAccuracy();
+            nav.mask = 0;
+            if (params.getGpsPositionAccuracy() != 0) {
+                debugPrintln("Setting ublox Gps PositionAccuracy");
+                nav.mask |= 16;
+                nav.pAcc = params.getGpsPositionAccuracy();
+            }
+            
+            if (params.getGpsDynamicModel() != 0) {
+                debugPrintln("Setting ublox DynamicModel");
+                nav.mask |= 1;
+                nav.dynModel = params.getGpsDynamicModel();
+            }
 
             retriesLeft = maxRetries;
             while (!ublox.setNavParameters(&nav) && (retriesLeft-- > 0))
