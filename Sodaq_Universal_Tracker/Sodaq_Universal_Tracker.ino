@@ -47,6 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "Enums.h"
 #include "CayenneLPP.h"
 #include "Network.h"
+#include "GpsFixReason.h"
 
 //#define DEBUG
 
@@ -190,7 +191,7 @@ void setAccelerometerTempSensorActive(bool on);
 bool isAlternativeFixEventApplicable();
 bool isCurrentTimeOfDayWithin(uint32_t daySecondsFrom, uint32_t daySecondsTo);
 void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt);
-bool getGpsFixAndTransmit();
+bool getGpsFixAndTransmit(GpsFixReason reason);
 uint8_t getBatteryVoltage();
 int8_t getBoardTemperature();
 void updateConfigOverTheAir(const uint8_t *buffer, uint16_t size);
@@ -308,7 +309,7 @@ void setup()
         CONSOLE_STREAM.end();
     }
 
-    if (getGpsFixAndTransmit())
+    if (getGpsFixAndTransmit(GpsFixReason::SETUP))
     {
         setLedColor(GREEN);
         sodaq_wdt_safe_delay(800);
@@ -329,7 +330,7 @@ void loop()
     if (updateOnTheMoveTimestampFlag)
     {
         debugPrintln("Updating On the Move timestamp flag")
-            lastOnTheMoveActivationTimestamp = getNow();
+        lastOnTheMoveActivationTimestamp = getNow();
         updateOnTheMoveTimestampFlag = false;
     }
 
@@ -863,7 +864,7 @@ void runDefaultFixEvent(uint32_t now)
     if (!isAlternativeFixEventApplicable())
     {
         debugPrintln("Default fix event started.");
-        getGpsFixAndTransmit();
+        getGpsFixAndTransmit(GpsFixReason::DEFAULT_FIX_INTERVAL);
     }
 }
 
@@ -875,7 +876,7 @@ void runAlternativeFixEvent(uint32_t now)
     if (isAlternativeFixEventApplicable())
     {
         debugPrintln("Alternative fix event started.");
-        getGpsFixAndTransmit();
+        getGpsFixAndTransmit(GpsFixReason::ALTERNATIVE_FIX_INTERVAL);
     }
 }
 
@@ -890,7 +891,7 @@ void runOnTheMoveFixEvent(uint32_t now)
         if (now - lastOnTheMoveActivationTimestamp < params.getOnTheMoveTimeout() * 60)
         {
             debugPrintln("On-the-move fix event started.");
-            getGpsFixAndTransmit();
+            getGpsFixAndTransmit(GpsFixReason::ON_THE_MOVE);
         }
         else
         {
@@ -984,7 +985,7 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt)
  * Times-out after params.getGpsFixTimeout seconds.
  * Please see the documentation for more details on how this process works.
  */
-bool getGpsFixAndTransmit()
+bool getGpsFixAndTransmit(GpsFixReason reason)
 {
     debugPrintln("Starting getGpsFixAndTransmit()...");
 
@@ -1031,6 +1032,7 @@ bool getGpsFixAndTransmit()
     setGpsActive(false); // turn off gps as soon as it is not needed
 
     // populate all fields of the report record
+    pendingReportDataRecord.setReason((uint8_t)reason);
     pendingReportDataRecord.setTimestamp(getNow());
     pendingReportDataRecord.setBatteryVoltage(getBatteryVoltage());
     pendingReportDataRecord.setBoardTemperature(getBoardTemperature());

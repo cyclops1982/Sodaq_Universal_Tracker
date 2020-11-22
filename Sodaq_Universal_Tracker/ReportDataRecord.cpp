@@ -55,7 +55,8 @@ void ReportDataRecord::printRecordLn(Stream* stream, const char* separator) cons
         fieldPrintWithSeparator(stream, separator, getSatelliteCount());
         fieldPrintWithSeparator(stream, separator, getTimeToFix());
         fieldPrintWithSeparator(stream, separator, getHAccuracy());
-        fieldPrintWithSeparator(stream, "\n", getVAccuracy());
+        fieldPrintWithSeparator(stream, separator, getVAccuracy());
+        fieldPrintWithSeparator(stream, "\n", getReason());
     }
 }
 
