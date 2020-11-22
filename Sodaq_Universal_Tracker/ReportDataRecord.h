@@ -38,18 +38,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "MacroSum.h"
 #include "MacroCount.h"
 
-//    uint32_t Timestamp;
-//    uint8_t BatteryVoltage;
-//    int8_t BoardTemperature;
-//    uint32_t Lat;
-//    uint32_t Long;
-//    uint16_t Altitude;
-//    uint16_t Speed;
-//    uint8_t Course;
-//    uint8_t SatelliteCount;
-//    uint8_t TimeToFix;
 
-#define REPORT_DATA_RECORD_HEADER "Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy"
+#define REPORT_DATA_RECORD_HEADER "Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy, Reason"
 
 #define REPORT_DATA_FIELD_SIZES sizeof(uint32_t), \
                                 sizeof(uint8_t), \
@@ -62,7 +52,8 @@ POSSIBILITY OF SUCH DAMAGE.
                                 sizeof(uint8_t), \
                                 sizeof(uint8_t), \
                                 sizeof(uint32_t), \
-                                sizeof(uint32_t)
+                                sizeof(uint32_t), \
+                                sizeof(uint8_t)
 
 #define REPORT_DATA_BUFFER_SIZE (SUM(REPORT_DATA_FIELD_SIZES))
 #define REPORT_DATA_FIELD_COUNT (COUNT(REPORT_DATA_FIELD_SIZES))
@@ -107,6 +98,8 @@ public:
     uint32_t getVAccuracy() const { return getFieldValue<uint32_t>(vAccuracy);}
     void setVAccuracy(uint32_t value) const { setFieldValue(vAccuracy, value); }
 
+    uint8_t getReason() const { return getFieldValue<uint8_t>(Reason);}
+    void setReason(uint8_t value) const { setFieldValue(Reason, value); }
 
     uint16_t getSpeed() const { return getFieldValue<uint16_t>(Speed); }
     void setSpeed(uint16_t value) const { setFieldValue(Speed, value); }
@@ -125,7 +118,7 @@ protected:
 private:
     uint8_t buffer[REPORT_DATA_BUFFER_SIZE];
 
-    enum Fields { Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy };
+    enum Fields { Timestamp, BatteryVoltage, BoardTemperature, Lat, Long, Altitude, Speed, Course, SatelliteCount, TimeToFix, hAccuracy, vAccuracy, Reason};
 };
 
 #endif /* REPORTDATARECORD_H_ */
