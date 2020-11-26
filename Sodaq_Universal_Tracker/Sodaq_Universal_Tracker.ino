@@ -888,7 +888,7 @@ void runOnTheMoveFixEvent(uint32_t now)
     if (isOnTheMoveActivated)
     {
         debugPrintln("runOnTheMoveFixEvent0 - isOnTheMoveActivated");
-        if (now - lastOnTheMoveActivationTimestamp < params.getOnTheMoveTimeout() * 60)
+        if ((now - lastOnTheMoveActivationTimestamp) < (params.getOnTheMoveTimeout() * 60))
         {
             debugPrintln("On-the-move fix event started.");
             getGpsFixAndTransmit(GpsFixReason::ON_THE_MOVE);
