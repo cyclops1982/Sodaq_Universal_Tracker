@@ -216,8 +216,7 @@ Note: all values are little endian.
 | Time to fix (seconds, FF = no fix, in that case the above position is the last known) | uint8 (1) |
 | Horizontal Accuracy (mm) | uint32 (4) |
 | Vertical Accuracy (mm) | uint32 (4) |
-| GPS FIx Reason 
-0 = Unknown; 1=Setup; \n2=Default Fix Interval; 3 = Alternative fix interval; 4=On The Move Fix | uint8 (1) | 
+| GPS Fix Reason <br />0 = Unknown; 1=Setup; 2=Default Fix Interval; <br />3=Alternative fix interval; 4=On The Move Fix | uint8 (1) | 
 | Plus 0 - 3 of the following 10 bytes: |   |
 | Previous fix (seconds ago, FFFF means longer than) | uint16 (2) |
 | Lat | long (4) |
