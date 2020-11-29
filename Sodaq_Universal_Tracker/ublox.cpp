@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define DEBUG
+// #define DEBUG
 
 void UBlox::db_printf(const char *message, ...)
 {

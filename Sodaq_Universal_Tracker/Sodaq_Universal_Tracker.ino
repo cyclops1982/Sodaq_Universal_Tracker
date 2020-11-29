@@ -157,6 +157,7 @@ uint16_t navPvtCounter = 0;
 volatile bool minuteFlag;
 volatile bool isOnTheMoveActivated;
 volatile uint32_t lastOnTheMoveActivationTimestamp;
+volatile uint32_t lastGpsFixTimestamp;
 volatile bool updateOnTheMoveTimestampFlag;
 
 static uint8_t lastResetCause;
@@ -987,7 +988,8 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt)
  */
 bool getGpsFixAndTransmit(GpsFixReason reason)
 {
-    debugPrintln("Starting getGpsFixAndTransmit()...");
+    debugPrint("Starting getGpsFixAndTransmit(reason: ");
+    debugPrintln(reason);
 
     if (!isGpsInitialized)
     {
@@ -996,6 +998,16 @@ bool getGpsFixAndTransmit(GpsFixReason reason)
         return false;
     }
 
+    uint16_t timeBetweenSecs = params.getMinTimeBetweenGpsFix() * 60;
+    debugPrintln("time between fixes: ");
+    debugPrintln(timeBetweenSecs);
+    debugPrintln(getNow());
+    debugPrintln(lastGpsFixTimestamp);
+    if (lastGpsFixTimestamp != 0 && timeBetweenSecs != 0 && ((getNow() - lastGpsFixTimestamp) < timeBetweenSecs)) {
+        debugPrintln("GPS fix too quickly.. skipping")
+        return false;
+    }
+    lastGpsFixTimestamp = getNow();
     bool isSuccessful = false;
     setGpsActive(true);
 

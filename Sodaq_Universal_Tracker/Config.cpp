@@ -71,13 +71,13 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 1;
+    _defaultFixInterval = 5;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
     _alternativeFixToHours = 0;
     _alternativeFixToMinutes = 0;
-    _gpsFixTimeout = 180;
+    _gpsFixTimeout = 10;
 
     memset(_devAddrOrEUI, 0x30, sizeof(_devAddrOrEUI) - 1);
     _devAddrOrEUI[sizeof(_devAddrOrEUI) - 1] = '\0';
@@ -123,6 +123,8 @@ void ConfigParams::reset()
     _onTheMoveFixInterval = 1; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
     _onTheMoveTimeout = 1; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
 
+    _minTimeBetweenFix = 5; // Getting a GPS fix, and sending out the data is quite expensive. So there should be at least this much time in minutes between every fix. This applies to *all* methods of GPS fixing.
+
     _loraPort = 1;
     _isAdrOn = 0;
     _isAckOn = 0;
@@ -164,58 +166,59 @@ void ConfigParams::commit(bool forced)
 }
 
 static const Command args[] = {
-    { "GPS                       ", 0,      0,                  Command::show_title, 0 },
-    { "Fix Interval (min)        ", "fi=", Command::set_uint16, Command::show_uint16, &params._defaultFixInterval },
-    { "Alt. Fix Interval (min)   ", "afi=", Command::set_uint16, Command::show_uint16, &params._alternativeFixInterval },
-    { "Alt. Fix From (HH)        ", "affh=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromHours },
-    { "Alt. Fix From (MM)        ", "affm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromMinutes },
-    { "Alt. Fix To (HH)          ", "afth=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToHours },
-    { "Alt. Fix To (MM)          ", "aftm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToMinutes },
-    { "GPS Fix Timeout (sec)     ", "gft=", Command::set_uint8, Command::show_uint8, &params._gpsFixTimeout },
-    { "GPS Postition Accuracy (m)", "gpa=", Command::set_uint16, Command::show_uint16, &params._gpsPosAccuracy },
-    { "GPS Dynamic Model         ", "gpm=", Command::set_uint8, Command::show_uint8, &params._gpsDynModel },
-    { "Minimum sat count         ", "sat=", Command::set_uint8, Command::show_uint8, &params._gpsMinSatelliteCount },
-    { "Num Coords to Upload      ", "num=", Command::set_uint8, Command::show_uint8, &params._coordinateUploadCount },
-    { "On-the-move Functionality ", 0,      0,                  Command::show_title, 0 },
-    { "Acceleration% (100% = 8g) ", "acc=", Command::set_uint8, Command::show_uint8, &params._accelerationPercentage },
-    { "Acceleration Duration     ", "acd=", Command::set_uint8, Command::show_uint8, &params._accelerationDuration },
-    { "Fix Interval (min)        ", "acf=", Command::set_uint8, Command::show_uint8, &params._onTheMoveFixInterval },
-    { "Timeout (min)             ", "act=", Command::set_uint8, Command::show_uint8, &params._onTheMoveTimeout },
+    { "GPS                               ", 0, 0, Command::show_title, 0 },
+    { "Fix Interval (min)                ", "fi=", Command::set_uint16, Command::show_uint16, &params._defaultFixInterval },
+    { "Alt. Fix Interval (min)           ", "afi=", Command::set_uint16, Command::show_uint16, &params._alternativeFixInterval },
+    { "Alt. Fix From (HH)                ", "affh=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromHours },
+    { "Alt. Fix From (MM)                ", "affm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixFromMinutes },
+    { "Alt. Fix To (HH)                  ", "afth=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToHours },
+    { "Alt. Fix To (MM)                  ", "aftm=", Command::set_uint8, Command::show_uint8, &params._alternativeFixToMinutes },
+    { "GPS Fix Timeout (sec)             ", "gft=", Command::set_uint8, Command::show_uint8, &params._gpsFixTimeout },
+    { "GPS Postition Accuracy (m)        ", "gpa=", Command::set_uint16, Command::show_uint16, &params._gpsPosAccuracy },
+    { "GPS Dynamic Model                 ", "gpm=", Command::set_uint8, Command::show_uint8, &params._gpsDynModel },
+    { "Minimum sat count                 ", "sat=", Command::set_uint8, Command::show_uint8, &params._gpsMinSatelliteCount },
+    { "Num Coords to Upload              ", "num=", Command::set_uint8, Command::show_uint8, &params._coordinateUploadCount },
+    { "On-the-move Functionality         ", 0, 0, Command::show_title, 0 },
+    { "Acceleration% (100% = 8g)         ", "acc=", Command::set_uint8, Command::show_uint8, &params._accelerationPercentage },
+    { "Acceleration Duration             ", "acd=", Command::set_uint8, Command::show_uint8, &params._accelerationDuration },
+    { "Fix Interval (min)                ", "acf=", Command::set_uint8, Command::show_uint8, &params._onTheMoveFixInterval },
+    { "Timeout (min)                     ", "act=", Command::set_uint8, Command::show_uint8, &params._onTheMoveTimeout },
+    { "Other                             ", 0, 0, Command::show_title, 0 },
+    { "Minimum time between Fixes (min)  ", "mfi=", Command::set_uint8, Command::show_uint8, &params._minTimeBetweenFix },
 #if defined(ARDUINO_SODAQ_ONE)
-    { "LoRa                      ", 0,      0,                  Command::show_title, 0 },
-    { "OTAA Mode (OFF=0 / ON=1)  ", "otaa=", Command::set_uint8, Command::show_uint8, &params._isOtaaEnabled },
-    { "Retry conn. (OFF=0 / ON=1)", "retry=", Command::set_uint8, Command::show_uint8, &params._shouldRetryConnectionOnSend },
-    { "ADR (OFF=0 / ON=1)        ", "adr=", Command::set_uint8, Command::show_uint8, &params._isAdrOn },
-    { "ACK (OFF=0 / ON=1)        ", "ack=", Command::set_uint8, Command::show_uint8, &params._isAckOn },
-    { "Spreading Factor          ", "sf=", Command::set_uint8, Command::show_uint8, &params._spreadingFactor },
-    { "Output Index              ", "pwr=", Command::set_uint8, Command::show_uint8, &params._powerIndex },
-    { "Lora Port                 ", "lprt=", Command::set_uint8, Command::show_uint8, &params._loraPort },
-    { "DevAddr / DevEUI          ", "dev=", Command::set_string, Command::show_string, params._devAddrOrEUI, sizeof(params._devAddrOrEUI) },
-    { "AppSKey / AppEUI          ", "app=", Command::set_string, Command::show_string, params._appSKeyOrEUI, sizeof(params._appSKeyOrEUI) },
-    { "NWSKey / AppKey           ", "key=", Command::set_string, Command::show_string, params._nwSKeyOrAppKey, sizeof(params._nwSKeyOrAppKey) },
-    { "Repeat Count              ", "rep=", Command::set_uint8, Command::show_uint8, &params._repeatCount },
+    { "LoRa                              ", 0, 0, Command::show_title, 0 },
+    { "OTAA Mode (OFF=0 / ON=1)          ", "otaa=", Command::set_uint8, Command::show_uint8, &params._isOtaaEnabled },
+    { "Retry conn. (OFF=0 / ON=1)        ", "retry=", Command::set_uint8, Command::show_uint8, &params._shouldRetryConnectionOnSend },
+    { "ADR (OFF=0 / ON=1)                ", "adr=", Command::set_uint8, Command::show_uint8, &params._isAdrOn },
+    { "ACK (OFF=0 / ON=1)                ", "ack=", Command::set_uint8, Command::show_uint8, &params._isAckOn },
+    { "Spreading Factor                  ", "sf=", Command::set_uint8, Command::show_uint8, &params._spreadingFactor },
+    { "Output Index                      ", "pwr=", Command::set_uint8, Command::show_uint8, &params._powerIndex },
+    { "Lora Port                         ", "lprt=", Command::set_uint8, Command::show_uint8, &params._loraPort },
+    { "DevAddr / DevEUI                  ", "dev=", Command::set_string, Command::show_string, params._devAddrOrEUI, sizeof(params._devAddrOrEUI) },
+    { "AppSKey / AppEUI                  ", "app=", Command::set_string, Command::show_string, params._appSKeyOrEUI, sizeof(params._appSKeyOrEUI) },
+    { "NWSKey / AppKey                   ", "key=", Command::set_string, Command::show_string, params._nwSKeyOrAppKey, sizeof(params._nwSKeyOrAppKey) },
+    { "Repeat Count                      ", "rep=", Command::set_uint8, Command::show_uint8, &params._repeatCount },
 #elif defined(ARDUINO_SODAQ_SFF) || defined (ARDUINO_SODAQ_SARA)
-    { "Cellular                  ", 0,      0,                  Command::show_title, 0 },
-    { "Network Type (N2xx NB-IoT = 2, R4xx NB-IoT = 3, R4xx LTE-M = 4, R412 2G = 5, 2G/3G = 6) ", "ntype=", Command::set_uint8, Command::show_uint8, &params._networkType },
-    { "All Things Talk Token     ", "att=", Command::set_string, Command::show_string, params._attToken, sizeof(params._attToken) },
-    { "APN                       ", "apn=", Command::set_string, Command::show_string, params._apn, sizeof(params._apn) },
-    { "Force Operator            ", "opr=", Command::set_string, Command::show_string, params._forceOperator, sizeof(params._forceOperator) },
-    { "CID                       ", "cid=", Command::set_uint8, Command::show_uint8, &params._cid },
-    { "MNO Profile               ", "mno=", Command::set_uint8, Command::show_uint8, &params._mnoProfile },
-    { "APN user                  ", "apnu=", Command::set_string, Command::show_string, params._apnUser, sizeof(params._apnUser) },
-    { "APN password              ", "apnp=", Command::set_string, Command::show_string, params._apnPassword, sizeof(params._apnPassword) },
-    { "Band Info                 ", "bnd=", Command::set_string,  Command::show_string, params._band, sizeof(params._band) },
-    { "Target IP or DNS          ", "ip=",  Command::set_string, Command::show_string, params._targetIP, sizeof(params._targetIP) },
-    { "Target port               ", "prt=", Command::set_uint16, Command::show_uint16, &params._targetPort },
-    { "Response Timeout          ", "rxto=", Command::set_uint8, Command::show_uint8, &params._rxTimeout },
+    { "Cellular                          ", 0, 0, Command::show_title, 0 },
+    { "Network Type (N2xx NB-IoT = 2, R4xx NB-IoT = 3, R4xx LTE-M = 4, R412 2G = 5, 2G/3G = 6)         ", "ntype=", Command::set_uint8, Command::show_uint8, &params._networkType },
+    { "All Things Talk Token             ", "att=", Command::set_string, Command::show_string, params._attToken, sizeof(params._attToken) },
+    { "APN                               ", "apn=", Command::set_string, Command::show_string, params._apn, sizeof(params._apn) },
+    { "Force Operator                    ", "opr=", Command::set_string, Command::show_string, params._forceOperator, sizeof(params._forceOperator) },
+    { "CID                               ", "cid=", Command::set_uint8, Command::show_uint8, &params._cid },
+    { "MNO Profile                       ", "mno=", Command::set_uint8, Command::show_uint8, &params._mnoProfile },
+    { "APN user                          ", "apnu=", Command::set_string, Command::show_string, params._apnUser, sizeof(params._apnUser) },
+    { "APN password                      ", "apnp=", Command::set_string, Command::show_string, params._apnPassword, sizeof(params._apnPassword) },
+    { "Band Info                         ", "bnd=", Command::set_string,  Command::show_string, params._band, sizeof(params._band) },
+    { "Target IP or DNS                  ", "ip=",  Command::set_string, Command::show_string, params._targetIP, sizeof(params._targetIP) },
+    { "Target port                       ", "prt=", Command::set_uint16, Command::show_uint16, &params._targetPort },
+    { "Response Timeout                  ", "rxto=", Command::set_uint8, Command::show_uint8, &params._rxTimeout },
 #endif
-    { "Misc                      ", 0,      0,                  Command::show_title, 0 },
+    { "Misc                              ", 0, 0, Command::show_title, 0 },
 #if defined(ARDUINO_SODAQ_ONE)
-    { "Cayenne LPP (OFF=0 / ON=1)", "cay=", Command::set_uint8, Command::show_uint8, &params._isCayennePayloadEnabled },
+    { "Cayenne LPP (OFF=0 / ON=1)        ", "cay=", Command::set_uint8, Command::show_uint8, &params._isCayennePayloadEnabled },
 #endif
-    { "Status LED (OFF=0 / ON=1) ", "led=", Command::set_uint8, Command::show_uint8, &params._isLedEnabled },
-
-    { "Debug (OFF=0 / ON=1)      ", "dbg=", Command::set_uint8, Command::show_uint8, &params._isDebugOn }
+    { "Status LED (OFF=0 / ON=1)         ", "led=", Command::set_uint8, Command::show_uint8, &params._isLedEnabled },
+    { "Debug (OFF=0 / ON=1)              ", "dbg=", Command::set_uint8, Command::show_uint8, &params._isDebugOn }
 };
 
 void ConfigParams::showConfig(Stream* stream)

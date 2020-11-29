@@ -59,6 +59,7 @@ struct ConfigParams
     uint8_t _isLedEnabled;
     uint8_t _isOtaaEnabled;
     uint8_t _shouldRetryConnectionOnSend;
+    uint8_t _minTimeBetweenFix;
 
     char _devAddrOrEUI[16 + 1];
     char _appSKeyOrEUI[32 + 1];
@@ -122,6 +123,7 @@ public:
     uint8_t getOnTheMoveFixInterval() const { return _onTheMoveFixInterval; }
     uint8_t getOnTheMoveTimeout() const { return _onTheMoveTimeout; }
 
+    uint16_t getMinTimeBetweenGpsFix() const { return _minTimeBetweenFix; }
     uint8_t getIsLedEnabled() const { return _isLedEnabled; }
     uint8_t getIsOtaaEnabled() const { return _isOtaaEnabled; }
     uint8_t getShouldRetryConnectionOnSend() const { return _shouldRetryConnectionOnSend; }
