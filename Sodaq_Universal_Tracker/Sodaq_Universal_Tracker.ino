@@ -999,10 +999,6 @@ bool getGpsFixAndTransmit(GpsFixReason reason)
     }
 
     uint16_t timeBetweenSecs = params.getMinTimeBetweenGpsFix() * 60;
-    debugPrintln("time between fixes: ");
-    debugPrintln(timeBetweenSecs);
-    debugPrintln(getNow());
-    debugPrintln(lastGpsFixTimestamp);
     if (lastGpsFixTimestamp != 0 && timeBetweenSecs != 0 && ((getNow() - lastGpsFixTimestamp) < timeBetweenSecs)) {
         debugPrintln("GPS fix too quickly.. skipping")
         return false;
