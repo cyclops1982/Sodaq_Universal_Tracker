@@ -993,8 +993,8 @@ void delegateNavPvt(NavigationPositionVelocityTimeSolution *NavPvt)
         pendingReportDataRecord.setLong(NavPvt->lon);
         pendingReportDataRecord.setSatelliteCount(NavPvt->numSV);
         pendingReportDataRecord.setSpeed((NavPvt->gSpeed * 36) / 10000); // mm/s converted to km/h
-        pendingReportDataRecord.setHAccuracy(NavPvt->hAcc);
-        pendingReportDataRecord.setVAccuracy(NavPvt->vAcc);
+        pendingReportDataRecord.setHAccuracy(NavPvt->hAcc / 1000); // mm to m
+        pendingReportDataRecord.setVAccuracy(NavPvt->vAcc / 1000) ;
 
         isPendingReportDataRecordNew = true;
 
@@ -1126,6 +1126,7 @@ void setGpsActive(bool on)
         int8_t retriesLeft;
 
         //TODO: figure out why we're doing this retry mechanism. Is there something where the ublox could not respond?
+        //TODO: we should do this in setup and write it to permanent configuration. That would save quite a few cycles during enablement of GPS.
         retriesLeft = maxRetries;
         while (!ublox.getPortConfigurationDDC(&pcd) && (retriesLeft-- > 0))
         {
@@ -1192,7 +1193,7 @@ void setGpsActive(bool on)
                 return;
             }
         }
-
+/*
         retriesLeft = maxRetries;
         while (!ublox.getNavParameters(&nav2) && (retriesLeft-- > 0))
         {
@@ -1206,7 +1207,7 @@ void setGpsActive(bool on)
         }
 
         ublox.printUBX_CFG_NAV5(nav2);
-
+*/
 
         ublox.CfgMsg(UBX_NAV_PVT, 1); // Navigation Position Velocity TimeSolution
         ublox.funcNavPvt = delegateNavPvt;
