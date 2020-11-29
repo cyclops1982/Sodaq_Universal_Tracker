@@ -1168,7 +1168,7 @@ void setGpsActive(bool on)
                 debugPrintln("Retrying ublox.setNavParameters(&nav)...");
                 sodaq_wdt_safe_delay(15);
             }
-            if (retriesLeft == -1)
+            if (retriesLeft == -1) 
             {
                 debugPrintln("ublox.setNavParameters(&nav) failed!");
                 return;
