@@ -51,8 +51,8 @@ POSSIBILITY OF SUCH DAMAGE.
                                 sizeof(uint8_t), \
                                 sizeof(uint8_t), \
                                 sizeof(uint8_t), \
-                                sizeof(uint32_t), \
-                                sizeof(uint32_t), \
+                                sizeof(uint8_t), \
+                                sizeof(uint8_t), \
                                 sizeof(uint8_t)
 
 #define REPORT_DATA_BUFFER_SIZE (SUM(REPORT_DATA_FIELD_SIZES))
@@ -92,11 +92,11 @@ public:
     int16_t getAltitude() const { return getFieldValue<int16_t>(Altitude); }
     void setAltitude(int16_t value) const { setFieldValue(Altitude, value); }
 
-    uint32_t getHAccuracy() const { return getFieldValue<uint32_t>(hAccuracy);}
-    void setHAccuracy(uint32_t value) const { setFieldValue(hAccuracy, value); }
+    uint32_t getHAccuracy() const { return getFieldValue<uint8_t>(hAccuracy);}
+    void setHAccuracy(uint8_t value) const { setFieldValue(hAccuracy, value); }
 
-    uint32_t getVAccuracy() const { return getFieldValue<uint32_t>(vAccuracy);}
-    void setVAccuracy(uint32_t value) const { setFieldValue(vAccuracy, value); }
+    uint32_t getVAccuracy() const { return getFieldValue<uint8_t>(vAccuracy);}
+    void setVAccuracy(uint8_t value) const { setFieldValue(vAccuracy, value); }
 
     uint8_t getReason() const { return getFieldValue<uint8_t>(Reason);}
     void setReason(uint8_t value) const { setFieldValue(Reason, value); }
