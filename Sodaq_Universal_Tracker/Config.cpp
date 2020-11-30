@@ -71,13 +71,13 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 5;
+    _defaultFixInterval = 30;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
     _alternativeFixToHours = 0;
     _alternativeFixToMinutes = 0;
-    _gpsFixTimeout = 10;
+    _gpsFixTimeout = 120;
 
     memset(_devAddrOrEUI, 0x30, sizeof(_devAddrOrEUI) - 1);
     _devAddrOrEUI[sizeof(_devAddrOrEUI) - 1] = '\0';
@@ -120,10 +120,10 @@ void ConfigParams::reset()
 
     _accelerationPercentage = 15;
     _accelerationDuration = 0; // this is a number that is not seconds or minutes. It depends on the ODS mode and is than a part of the frequency of the accelerometer.
-    _onTheMoveFixInterval = 1; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
-    _onTheMoveTimeout = 1; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
+    _onTheMoveFixInterval = 15; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
+    _onTheMoveTimeout = 15; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
 
-    _minTimeBetweenFix = 5; // Getting a GPS fix, and sending out the data is quite expensive. So there should be at least this much time in minutes between every fix. This applies to *all* methods of GPS fixing.
+    _minTimeBetweenFix = 15; // Getting a GPS fix, and sending out the data is quite expensive. So there should be at least this much time in minutes between every fix. This applies to *all* methods of GPS fixing.
 
     _loraPort = 1;
     _isAdrOn = 0;
@@ -131,8 +131,8 @@ void ConfigParams::reset()
     _spreadingFactor = 12;
     _powerIndex = 1;
     _gpsMinSatelliteCount = 3;
-    _gpsPosAccuracy = 0; // Default to 0 as it would indicate that we use the default fix accuracy.
-    _gpsDynModel = 0; // The default dyn model seems to be 0 anyway. Definition of this in 32.10.19.1
+    _gpsPosAccuracy = 25; // Default to 0 as it would indicate that we use the default fix accuracy.
+    _gpsDynModel = 2; // The default dyn model seems to be 0 anyway. Definition of this in 32.10.19.1
 
     _isLedEnabled = 0;
     _isDebugOn = 1;
