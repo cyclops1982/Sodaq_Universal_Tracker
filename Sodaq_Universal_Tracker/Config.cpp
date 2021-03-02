@@ -135,7 +135,7 @@ void ConfigParams::reset()
     _gpsDynModel = 2; // The default dyn model seems to be 0 anyway. Definition of this in 32.10.19.1
 
     _isLedEnabled = 0;
-    _isDebugOn = 1;
+    _isDebugOn = 0;
 
     _shouldRetryConnectionOnSend = true;
 
