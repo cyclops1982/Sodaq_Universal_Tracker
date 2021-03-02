@@ -52,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
-#define VERSION "1.0.7"
+#define VERSION "1.0.8"
 #define STARTUP_DELAY 500
 
 // #define DEFAULT_LORA_PORT 2

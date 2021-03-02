@@ -71,7 +71,7 @@ void ConfigParams::read()
 
 void ConfigParams::reset()
 {
-    _defaultFixInterval = 30;
+    _defaultFixInterval = 15;
     _alternativeFixInterval = 0;
     _alternativeFixFromHours = 0;
     _alternativeFixFromMinutes = 0;
@@ -118,12 +118,12 @@ void ConfigParams::reset()
     _coordinateUploadCount = 1;
     _repeatCount = 0;
 
-    _accelerationPercentage = 10;
+    _accelerationPercentage = 0;
     _accelerationDuration = 0; // this is a number that is not seconds or minutes. It depends on the ODS mode and is than a part of the frequency of the accelerometer.
-    _onTheMoveFixInterval = 15; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
-    _onTheMoveTimeout = 10; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
+    _onTheMoveFixInterval = 0; // This indicates *HOW OFTEN* the code is run to *check* if there was movement
+    _onTheMoveTimeout = 0; // If you had movement, and the fix interval starts running, then this decides if you are going to send it or not.
 
-    _minTimeBetweenFix = 15; // Getting a GPS fix, and sending out the data is quite expensive. So there should be at least this much time in minutes between every fix. This applies to *all* methods of GPS fixing.
+    _minTimeBetweenFix = 5; // Getting a GPS fix, and sending out the data is quite expensive. So there should be at least this much time in minutes between every fix. This applies to *all* methods of GPS fixing.
 
     _loraPort = 1;
     _isAdrOn = 0;
