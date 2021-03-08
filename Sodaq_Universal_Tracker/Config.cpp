@@ -134,8 +134,8 @@ void ConfigParams::reset()
     _gpsPosAccuracy = 25; // Default to 0 as it would indicate that we use the default fix accuracy.
     _gpsDynModel = 2; // The default dyn model seems to be 0 anyway. Definition of this in 32.10.19.1
 
-    _isLedEnabled = 0;
-    _isDebugOn = 0;
+    _isLedEnabled = 1;
+    _isDebugOn = 1;
 
     _shouldRetryConnectionOnSend = true;
 
