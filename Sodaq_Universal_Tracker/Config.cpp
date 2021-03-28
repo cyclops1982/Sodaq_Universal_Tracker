@@ -109,7 +109,7 @@ void ConfigParams::reset()
     _targetIP[sizeof(_targetIP) - 1] = '\0';
 
     _cid = 1;
-    _mnoProfile = 1;
+    _mnoProfile = 100;
 
     _targetPort = 0;
 

@@ -15,11 +15,11 @@
                 "UNICODE",
                 "_UNICODE",
                 "ENABLE_SLEEP",
-                "ARDUINO_SODAQ_ONE",
+                "ARDUINO_SODAQ_SFF",
                 "ARDUINO_ARCH_SAMD"
             ],
             "compilerArgs": [
-                "-D ARDUINO_SODAQ_ONE",
+                "-D ARDUINO_SODAQ_SFF",
                 "-D ARDUINO_ARCH_SAMD",
                 "-D ENABLE_SLEEP"
             ],

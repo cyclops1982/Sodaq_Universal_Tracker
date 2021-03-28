@@ -54,14 +54,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 #define PROJECT_NAME "SODAQ - Universal Tracker"
-#define VERSION "1.1.4"
+#define VERSION "1.1.5"
 #define STARTUP_DELAY 1000
 
 // #define DEFAULT_LORA_PORT 2
-#define DEFAULT_IS_OTAA_ENABLED 1
+// #define DEFAULT_IS_OTAA_ENABLED 1
 // #define DEFAULT_DEVADDR_OR_DEVEUI "0000000000000000"
 // #define DEFAULT_APPSKEY_OR_APPEUI "00000000000000000000000000000000"
-#define DEFAULT_NWSKEY_OR_APPKEY "05B2B40BBFCD3C3D40429B959E3179EF"
+// #define DEFAULT_NWSKEY_OR_APPKEY "05B2B40BBFCD3C3D40429B959E3179EF"
 
 #define GPS_TIME_VALIDITY 0b00000011 // date and time (but not fully resolved)
 #define GPS_FIX_FLAGS 0b00000001     // just gnssFixOK
@@ -123,7 +123,7 @@ Time time;
 Sodaq_LSM303AGR accelerometer;
 Network network;
 
-#define DEFAULT_APN "nb.inetd.gdsp" // APN Vodafone NB-IoT
+#define DEFAULT_APN "hologram" // APN Vodafone NB-IoT
 #define DEFAULT_FORCE_OPERATOR "0"  // Use "0" for auto operator
 #define DEFAULT_BAND "524416"       // R4X bandmask for band 8,20
 // #define DEFAULT_BAND "8,20" // N2X select bands 8 and 20
@@ -145,7 +145,7 @@ Network network;
 #define MODEM_STREAM Serial1
 #define MODEM_STREAM_RX (PIN_SERIAL1_RX)
 #define MODEM_STREAM_TX (PIN_SERIAL1_TX)
-#define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_NOTYPE;
+#define DEFAULT_NETWORK_TYPE Network::NETWORK_TYPE_2G_R4;
 #else
 #error "No network type defined"
 #endif
