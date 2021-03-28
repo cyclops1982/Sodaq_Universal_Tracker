@@ -11,17 +11,8 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE",
-                "ENABLE_SLEEP",
                 "ARDUINO_SODAQ_SFF",
-                "ARDUINO_ARCH_SAMD"
-            ],
-            "compilerArgs": [
-                "-D ARDUINO_SODAQ_SFF",
-                "-D ARDUINO_ARCH_SAMD",
-                "-D ENABLE_SLEEP"
+                "ARDUINO_ARCH_SAMD",
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu11",
